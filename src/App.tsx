@@ -15,7 +15,7 @@ function App() {
       onChange={(e) => setNodeCount(Number(e.target.value))}
       />
       <p>Node Count: {nodeCount}</p>
-      <ForceGraph nodeCount={nodeCount} style={{ width: '100vw' }} />
+      <ForceGraph nodeCount={nodeCount} />
     </>
   )
 }
