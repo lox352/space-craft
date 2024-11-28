@@ -3,7 +3,8 @@ import './App.css'
 import ForceGraph from './ForceGraph'
 
 function App() {
-  const [nodeCount, setNodeCount] = useState(20)
+  const [stitchesPerRow, setStitchesPerRow] = useState(20)
+  const [numberOfRows, setNumberOfRows] = useState(20)
 
   return (
     <>
@@ -11,11 +12,19 @@ function App() {
       type="range"
       min="1"
       max="100"
-      value={nodeCount}
-      onChange={(e) => setNodeCount(Number(e.target.value))}
+      value={stitchesPerRow}
+      onChange={(e) => setStitchesPerRow(Number(e.target.value))}
       />
-      <p>Node Count: {nodeCount}</p>
-      <ForceGraph nodeCount={nodeCount} />
+      <p>Node Count: {stitchesPerRow}</p>
+      <input
+      type="range"
+      min="1"
+      max="100"
+      value={numberOfRows}
+      onChange={(e) => setNumberOfRows(Number(e.target.value))}
+      />
+      <p>Number of Rows: {numberOfRows}</p>
+      <ForceGraph stitchesPerRow={stitchesPerRow} numberOfRows={numberOfRows} />
     </>
   )
 }
