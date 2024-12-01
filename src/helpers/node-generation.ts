@@ -5,18 +5,18 @@ import { toNode } from "./node-object";
 export const nodeDistance = 160;
 const radius = (nodeCount: number) => nodeDistance / Math.sin(Math.PI / nodeCount);
 
-const getPosition = (nodeNumber: number, nodesPerRow: number): Point => {
-  const angle = (nodeNumber / nodesPerRow) * Math.PI * 2;
-  const x = radius(nodesPerRow) * Math.cos(angle);
-  const y = (nodeDistance * nodeNumber) / nodesPerRow;
-  const z = radius(nodesPerRow) * Math.sin(angle);
+const getPosition = (nodeNumber: number, currentNodesPerRow: number, originalNodesPerRow: number): Point => {
+  const angle = (nodeNumber / originalNodesPerRow) * Math.PI * 2;
+  const x = radius(currentNodesPerRow) * Math.cos(angle);
+  const y = (nodeDistance * nodeNumber) / originalNodesPerRow;
+  const z = radius(currentNodesPerRow) * Math.sin(angle);
   return { x, y, z }
 }
 
 const generateHelix = (numPoints: number): Point[] => {
   const points = [];
   for (let i = 0; i < numPoints; i++) {
-    const newPoint = getPosition(i, numPoints);
+    const newPoint = getPosition(i, numPoints, numPoints);
     points.push(newPoint);
   }
 
@@ -26,11 +26,12 @@ const generateHelix = (numPoints: number): Point[] => {
 const getNextNode = (
   lastNode: NodeObject,
   lastLink: LinkObject,
+  stitchesPerRow: number,
   type: "k1" | "k2tog" | "join"
 ): { nextNode: NodeObject; nextLinks: LinkObject[] } => {
-  const rowSize = (lastLink.source! as number) - (lastLink.target! as number)
+  const currentStitckesPerRow = (lastLink.source as number) - (lastLink.target as number);
   const nextId = (lastNode.id as number) + 1;
-  const nextNode = toNode(getPosition(nextId, rowSize), nextId);
+  const nextNode = toNode(getPosition(nextId, currentStitckesPerRow, stitchesPerRow), nextId);
 
   let nextLinks: LinkObject[] = [];
 

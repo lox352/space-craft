@@ -1,21 +1,22 @@
 import { useState } from 'react'
 import './App.css'
 import ForceGraph from './ForceGraph'
+import ChainSimulation from './ChainSimulation'
 
 function App() {
-  const [stitchesPerRow, setStitchesPerRow] = useState(20)
+  const [stitchesPerRow, setStitchesPerRow] = useState(144)
   const [numberOfRows, setNumberOfRows] = useState(20)
 
   return (
     <>
       <input
       type="range"
-      min="1"
-      max="100"
+      min="50"
+      max="200"
       value={stitchesPerRow}
       onChange={(e) => setStitchesPerRow(Number(e.target.value))}
       />
-      <p>Node Count: {stitchesPerRow}</p>
+      <p>Stitches per row: {stitchesPerRow}</p>
       <input
       type="range"
       min="1"
