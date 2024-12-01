@@ -7,8 +7,8 @@ import {
   nodeDistance,
 } from "./helpers/node-generation";
 import { toNode, fixNode } from "./helpers/node-object";
-import { LinkObject, NodeObject } from "three-forcegraph";
 import { colourNode } from "./helpers/node-colouring";
+import { LinkObject, NodeObject } from "three-forcegraph";
 import * as THREE from "three";
 
 interface ForceGraphProps {
@@ -50,6 +50,7 @@ const ForceGraph = ({ stitchesPerRow, numberOfRows }: ForceGraphProps) => {
       .enableNodeDrag(false)
       .d3VelocityDecay(0.05);
 
+    
     graph.d3Force("center", null);
     graph.d3Force("float-up", (alpha) => float(alpha, nodes, 5));
     graph.d3AlphaDecay(0.01);

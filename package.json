@@ -10,15 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@react-three/cannon": "^6.6.0",
-    "@react-three/fiber": "^8.17.10",
     "@turf/turf": "^7.1.0",
     "@vitejs/plugin-react-swc": "^3.7.2",
     "3d-force-graph": "^1.73.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "three": "^0.170.0",
-    "three-forcegraph": "^1.42.3"
+    "three": "^0.170.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",

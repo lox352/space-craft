@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import './App.css'
 import ForceGraph from './ForceGraph'
-import ChainSimulation from './ChainSimulation'
 
 function App() {
   const [stitchesPerRow, setStitchesPerRow] = useState(144)
   const [numberOfRows, setNumberOfRows] = useState(20)
 
   return (
+
     <>
       <input
       type="range"

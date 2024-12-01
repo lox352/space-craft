@@ -78,7 +78,7 @@ const getGlobalCoordinates = (
   const zNorm = z / radius;
 
   // Compute longitude and latitude
-  const longitude = Math.atan2(zNorm, xNorm); // Radians
+  const longitude = Math.atan2(xNorm, zNorm); // Radians
   const latitude = Math.asin(yNorm); // Radians
 
   // Convert to degrees
