@@ -1,5 +1,5 @@
 import "./App.css";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import {
   BallCollider,
   Physics,
@@ -12,6 +12,7 @@ import React from "react";
 import { Point } from "./types/point";
 import { Stitch } from "./types/stitch";
 import * as THREE from "three";
+import { truncate } from "@turf/turf";
 
 function createChevronTexture() {
   const size = 1028; // Texture resolution
@@ -56,10 +57,9 @@ function FixedPointMass({
       angularDamping={0.9}
     >
       <BallCollider args={[0.5]} />
-      <mesh>
-        <sphereGeometry args={[0.5, 32, 32]} />
-        <meshStandardMaterial color="red" />
-      </mesh>
+      <sprite>
+        <spriteMaterial map={texture} transparent={true} />
+      </sprite>
     </RigidBody>
   );
 }
@@ -71,6 +71,9 @@ function MovablePointMass({
   position: Point;
   rigidBodyRef: React.RefObject<any>;
 }) {
+  // useFrame(() => {
+  //   console.log(rigidBodyRef)
+  // })
   return (
     <RigidBody
       ref={rigidBodyRef}
@@ -239,10 +242,10 @@ class KnittingMachine {
   }
 }
 
-const getStitches = (stitchesPerRow: number): Stitch[] => {
+const getStitches = (stitchesPerRow: number, numberOfRows: number): Stitch[] => {
   const knittingMachine = new KnittingMachine(stitchesPerRow);
   knittingMachine.castOnRow(generateCircle(stitchesPerRow)).join();
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < numberOfRows; i++) {
     knittingMachine.knitRow(["k1"]);
   }
   for (let i = 0; i < 5; i++) {
@@ -256,17 +259,18 @@ const getStitches = (stitchesPerRow: number): Stitch[] => {
 
 function App() {
   const stitchesPerRow = 144;
-  const stitchRefs = getStitches(stitchesPerRow).map((stitch) => {
+  const numberOfRows = 20;
+  const stitchRefs = getStitches(stitchesPerRow, numberOfRows).map((stitch) => {
     return { ref: React.createRef(), stitch };
   });
 
   return (
     <div style={{ height: "100vh", width: "100%" }}>
-      <Canvas camera={{ position: [60, 15, 0] }}>
+      <Canvas camera={{ position: [60, 15, 0] }} style={{backgroundColor: 'white'}}>
         <OrbitControls />
         <ambientLight intensity={0.5} />
 
-        <Physics gravity={[0, 9.81, 0]}>
+        <Physics gravity={[0, 9.81, 0]} timeStep="vary" paused={false}>
           {stitchRefs.map(({ ref, stitch }) => (
             <React.Fragment key={stitch.id}>
               {stitch.id < stitchesPerRow ? (
@@ -284,9 +288,6 @@ function App() {
               {stitch.links.map((link) => {
                 const { ref: linkedRef, stitch: linkedStitch } =
                   stitchRefs[link];
-                console.log(
-                  `From ${stitch.id} to ${linkedStitch.id} at index ${link}`
-                );
                 return (
                   <Link
                     key={`${stitch.id}-${linkedStitch.id}}`}
@@ -298,46 +299,6 @@ function App() {
             </React.Fragment>
           ))}
         </Physics>
-        <Environment resolution={256}>
-          <group rotation={[-Math.PI / 3, 0, 1]}>
-            <Lightformer
-              form="circle"
-              intensity={100}
-              rotation-x={Math.PI / 2}
-              position={[0, 5, -9]}
-              scale={2}
-            />
-            <Lightformer
-              form="circle"
-              intensity={2}
-              rotation-y={Math.PI / 2}
-              position={[-5, 1, -1]}
-              scale={2}
-            />
-            <Lightformer
-              form="circle"
-              intensity={2}
-              rotation-y={Math.PI / 2}
-              position={[-5, -1, -1]}
-              scale={2}
-            />
-            <Lightformer
-              form="circle"
-              intensity={2}
-              rotation-y={-Math.PI / 2}
-              position={[10, 1, 0]}
-              scale={8}
-            />
-            <Lightformer
-              form="ring"
-              color="#4060ff"
-              intensity={80}
-              onUpdate={(self) => self.lookAt(0, 0, 0)}
-              position={[10, 10, 0]}
-              scale={10}
-            />
-          </group>
-        </Environment>
       </Canvas>
     </div>
   );
