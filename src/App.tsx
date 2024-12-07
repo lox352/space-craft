@@ -1,6 +1,6 @@
 import "./App.css";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Point } from "./types/point";
 import { Stitch } from "./types/stitch";
 import KnittingMachine from "./types/KnittingMachine";
@@ -22,27 +22,31 @@ const getStitches = (
 ): Stitch[] => {
   const knittingMachine = new KnittingMachine(stitchesPerRow);
   knittingMachine.castOnRow(generateCircle(stitchesPerRow)).join();
-  for (let i = 0; i < numberOfRows; i++) {
+  for (let i = 1; i < numberOfRows; i++) {
     knittingMachine.knitRow(["k1"]);
   }
-  for (let i = 0; i < 5; i++) {
-    knittingMachine.knitRow(["k1"]);
-    knittingMachine.knitRow(["k1", "k1", "k1", "k3tog"]);
-  }
-  knittingMachine.knitRow(["k1", "k3tog"]);
+  // for (let i = 0; i < 5; i++) {
+  //   knittingMachine.knitRow(["k1"]);
+  //   knittingMachine.knitRow(["k1", "k1", "k1", "k3tog"]);
+  // }
+  // knittingMachine.knitRow(["k1", "k3tog"]);
 
   return knittingMachine.stitches;
 };
 
 function App() {
-  const [stitchesPerRow, setStitchesPerRow] = useState(144);
-  const [numberOfRows, setNumberOfRows] = useState(30);
-  const stitches = getStitches(stitchesPerRow, numberOfRows);
+  const [stitchesPerRow, setStitchesPerRow] = useState(50);
+  const [numberOfRows, setNumberOfRows] = useState(3);
+  const [stitches, setStitches] = useState<Stitch[]>(getStitches(stitchesPerRow, numberOfRows));
   const [triggerColouring, setTriggerColouring] = useState(false);
 
   const handleColouring = () => {
     setTriggerColouring(true);
   };
+
+  useEffect(() => {
+    setStitches(getStitches(stitchesPerRow, numberOfRows));
+  }, [stitchesPerRow, numberOfRows]);
 
   return (
     <div style={{ height: "100vh", width: "100%" }}>
@@ -63,7 +67,31 @@ function App() {
       />
       <p>Number of Rows: {numberOfRows}</p>
       <button onClick={handleColouring}>Apply Coloring</button>
-      <ChainModel stitches={stitches} triggerColouring={triggerColouring} resetTrigger={() => setTriggerColouring(false)} />
+      <div style={{ position: "relative" }}>
+        {triggerColouring && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              backgroundColor: "rgba(255, 255, 255, 0.8)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 10,
+              width: "100%",
+              height: "100%",
+            }}
+          >
+            <div className="spinner"></div>
+          </div>
+        )}
+        <ChainModel
+          stitches={stitches}
+          triggerColouring={triggerColouring}
+          resetTrigger={() => setTriggerColouring(false)}
+        />
+      </div>
     </div>
   );
 }

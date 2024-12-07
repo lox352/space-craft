@@ -1,5 +1,5 @@
-import { Point } from "./point";
-import { Stitch } from "./stitch";
+import { Point } from "./types/point";
+import { Stitch } from "./types/stitch";
 
 type StitchType = "k1" | "k2tog" | "k3tog" | "join";
 

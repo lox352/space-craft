@@ -67,6 +67,7 @@ export default function PointMass({
   getStitchColour,
   triggerColouring,
   resetTrigger,
+  visible,
 }: {
   position: Point;
   rigidBodyRef: React.RefObject<RapierRigidBody>;
@@ -74,7 +75,7 @@ export default function PointMass({
   getStitchColour: (stitchRef: React.RefObject<RapierRigidBody>) => THREE.Color;
   triggerColouring: boolean;
   resetTrigger: () => void;
-
+  visible: boolean;
 }) {
   const frameCount = useRef(0);
   const meshRef = React.createRef<THREE.Mesh>();
@@ -82,15 +83,14 @@ export default function PointMass({
   const instanceColor = useRef(new Float32Array([0, 0, 1]));
 
   useEffect(() => {
-    if (triggerColouring)
-    {
+    if (triggerColouring) {
       const color = getStitchColour(rigidBodyRef);
       instanceColor.current[0] = color.r;
       instanceColor.current[1] = color.g;
       instanceColor.current[2] = color.b;
     }
     resetTrigger();
-  }, [getStitchColour, resetTrigger, rigidBodyRef, triggerColouring])
+  }, [getStitchColour, resetTrigger, rigidBodyRef, triggerColouring]);
 
   useFrame(() => {
     frameCount.current++;
@@ -112,27 +112,28 @@ export default function PointMass({
       colliders={false}
       collisionGroups={0b0010} // Assign to a specific group
       type={fixed ? "fixed" : "dynamic"}
-      mass={1}
       position={[position.x, position.y, position.z]}
       linearDamping={0.9}
       angularDamping={0.9}
     >
-      <BallCollider args={[0.5]} />
-      <mesh scale={2} ref={meshRef}>
-        <planeGeometry args={[1, 1]} />
-        <shaderMaterial
-          ref={materialRef}
-          attach="material"
-          uniforms={{
-            map: { value: chevronTexture },
-            instanceColor: { value: instanceColor.current },
-          }}
-          vertexShader={vertexShader}
-          fragmentShader={fragmentShader}
-          transparent={true}
-          side={THREE.DoubleSide}
-        />
-      </mesh>
+      <BallCollider args={[0.02]} />
+      {visible && (
+        <mesh scale={2} ref={meshRef}>
+          <planeGeometry args={[1, 1]} />
+          <shaderMaterial
+            ref={materialRef}
+            attach="material"
+            uniforms={{
+              map: { value: chevronTexture },
+              instanceColor: { value: instanceColor.current },
+            }}
+            vertexShader={vertexShader}
+            fragmentShader={fragmentShader}
+            transparent={true}
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+      )}
     </RigidBody>
   );
 }

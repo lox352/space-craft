@@ -101,6 +101,7 @@ const ChainModel: React.FC<ChainModelProps> = ({
                 getStitchColour={getStitchColour(stitchRefs)}
                 triggerColouring={triggerColouring}
                 resetTrigger={resetTrigger}
+                visible={stitch.id > 0}
               />
             );
           })}
@@ -109,12 +110,12 @@ const ChainModel: React.FC<ChainModelProps> = ({
               const stitchRef = stitchRefs.current[stitch.id];
               const linkedStitchRef = stitchRefs.current[link];
               if (!stitchRef || !linkedStitchRef) return null;
-
               return (
                 <Link
                   key={`${stitch.id}-${link}`}
                   bodyA={stitchRef}
                   bodyB={linkedStitchRef}
+                  maxLength={2}
                 />
               );
             })
