@@ -50,7 +50,6 @@ const ForceGraph = ({ stitchesPerRow, numberOfRows }: ForceGraphProps) => {
       .enableNodeDrag(false)
       .d3VelocityDecay(0.05);
 
-    
     graph.d3Force("center", null);
     graph.d3Force("float-up", (alpha) => float(alpha, nodes, 5));
     graph.d3AlphaDecay(0.01);
@@ -74,13 +73,14 @@ const ForceGraph = ({ stitchesPerRow, numberOfRows }: ForceGraphProps) => {
     //graph.onEngineStop(() => graph.nodeColor((node: NodeObject) => colourNode(node)));
     graph.onEngineStop(() => {
       if (engineStopped) return;
-      console.log("Callback")
+      console.log("Callback");
+      const maxY = Math.max(...nodes.map((node) => node.y as number));
       graph.zoomToFit(100);
       graph.nodeThreeObject((node: NodeObject) => {
         const sprite = new THREE.Sprite();
         sprite.scale.set(100, 100, 1);
         sprite.material = new THREE.SpriteMaterial({
-          color: colourNode(node, nodes),
+          color: colourNode({ x: node.x!, y: node.y!, z: node.z! }, maxY),
         });
         return sprite;
       });

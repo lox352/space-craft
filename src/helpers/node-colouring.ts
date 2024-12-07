@@ -3,6 +3,7 @@ import { point, booleanPointInPolygon } from "@turf/turf";
 import land from "../assets/land.json";
 import glaciated_areas from "../assets/glaciated_areas.json";
 import arctic_ice_shelves from "../assets/antarctic_ice_shelves.json";
+import { Point } from "../types/point";
 
 type LandUsage = "water" | "land" | "glaciated_areas" | "antarctic_ice_shelves";
 
@@ -38,11 +39,11 @@ const checkIfLand = (latitude: number, longitude: number): LandUsage => {
   return "water";
 };
 
-const colourNode = (node: NodeObject, allNodes: NodeObject[]): string => {
-  const coordinates = getGlobalCoordinates(node, allNodes);
-  // console.log(
-  //   `Node ${node.id} is at ${coordinates.latitude}, ${coordinates.longitude}`
-  // );
+const colourNode = (
+  position: Point,
+  mayY: number
+): "blue" | "green" | "white" | "black" => {
+  const coordinates = getGlobalCoordinates(position, mayY);
   const landUsage = checkIfLand(coordinates.latitude, coordinates.longitude);
   switch (landUsage) {
     case "water":
@@ -59,17 +60,12 @@ const colourNode = (node: NodeObject, allNodes: NodeObject[]): string => {
 };
 
 const getGlobalCoordinates = (
-  node: NodeObject,
-  allNodes: NodeObject[]
+  position: Point,
+  maxY: number
 ): GlobalCoordinates => {
-  const maxY = allNodes[allNodes.length - 1].y!;
-
-  const x = node.x!;
-  const y = node.y!;
-  const z = node.z!;
-
+  const { x, y, z } = position;
   // Given Cartesian coordinates (x, y, z)
-  const newY = (y - (maxY / 2));
+  const newY = y - maxY / 2;
   const radius = Math.sqrt(x * x + newY * newY + z * z);
 
   // Normalize coordinates
@@ -85,10 +81,10 @@ const getGlobalCoordinates = (
   const longitudeDegrees = longitude * (180 / Math.PI);
   const latitudeDegrees = latitude * (180 / Math.PI);
 
-  if (y > (maxY / 2)) {
+  if (y > maxY / 2) {
     return { latitude: latitudeDegrees, longitude: longitudeDegrees };
   } else {
-    const cylindricalLatitude = 90 * (y - (maxY / 2)) / (maxY / 2);
+    const cylindricalLatitude = (90 * (y - maxY / 2)) / (maxY / 2);
     return { latitude: cylindricalLatitude, longitude: longitudeDegrees };
   }
 };

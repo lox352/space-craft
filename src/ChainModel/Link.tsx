@@ -1,11 +1,11 @@
-import { useRopeJoint } from "@react-three/rapier";
+import { useRopeJoint, RapierRigidBody } from "@react-three/rapier";
 
 export default function Link({
   bodyA,
   bodyB,
 }: {
-  bodyA: React.RefObject<never>;
-  bodyB: React.RefObject<never>;
+  bodyA: React.RefObject<RapierRigidBody>;
+  bodyB: React.RefObject<RapierRigidBody>;
 }) {
   useRopeJoint(bodyA, bodyB, [
     [0, 0, 0], // Attach at the center of the fixed sphere
