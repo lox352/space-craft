@@ -9,29 +9,18 @@ import * as THREE from "three";
 import { colourNode } from "../helpers/node-colouring";
 
 const getStitchColour =
-  (stitchRefs: React.MutableRefObject<React.RefObject<RapierRigidBody>[]>) =>
-  (stitchRef: React.RefObject<RapierRigidBody>): THREE.Color => {
+  (stitchRefs: React.MutableRefObject<React.RefObject<RapierRigidBody>[]>) => 
+  async (stitchRef: React.RefObject<RapierRigidBody>): Promise<THREE.Color> => {
     if (!stitchRefs.current || !stitchRef.current)
-      return new THREE.Color(0x000000);
+      return new THREE.Color(0x000000); // Black
 
     const maxY = stitchRefs.current.reduce((max, ref) => {
       const y = ref.current?.translation().y || 0;
       return y > max ? y : max;
     }, 0);
 
-    const colour = colourNode(stitchRef.current.translation(), maxY);
-    switch (colour) {
-      case "blue":
-        return new THREE.Color(0x0000ff);
-      case "green":
-        return new THREE.Color(0x00ff00);
-      case "white":
-        return new THREE.Color(0xffffff);
-      case "black":
-        return new THREE.Color(0x000000);
-      default:
-        return new THREE.Color(0xffffff); // Default to white if no match
-    }
+    const colour = await colourNode(stitchRef.current.translation(), maxY);
+    return colour;
   };
 
 interface ChainModelProps {
@@ -63,9 +52,6 @@ const ChainModel: React.FC<ChainModelProps> = ({
       const ref = stitchRefs.current[stitch.id];
       if (stitch.links.length <= 1) {
         if (ref && ref.current) {
-          console.log(
-            `Refs changed for ${stitch.id}, new position is ${stitch.position.x}, ${stitch.position.y}, ${stitch.position.z}`
-          );
           ref.current.setTranslation(stitch.position, false); // Update position
           ref.current.setBodyType(1, false);
         }
@@ -79,7 +65,6 @@ const ChainModel: React.FC<ChainModelProps> = ({
     setRefsVersion((v) => v + (1 % 1000));
   }, [stitches, setRefsVersion]);
 
-  // const worker = useRef(new Worker());
 
   return (
     <div style={{ height: "100vh", width: "100%" }}>

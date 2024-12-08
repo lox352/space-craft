@@ -25,18 +25,18 @@ const getStitches = (
   for (let i = 1; i < numberOfRows; i++) {
     knittingMachine.knitRow(["k1"]);
   }
-  // for (let i = 0; i < 5; i++) {
-  //   knittingMachine.knitRow(["k1"]);
-  //   knittingMachine.knitRow(["k1", "k1", "k1", "k3tog"]);
-  // }
-  // knittingMachine.knitRow(["k1", "k3tog"]);
+  for (let i = 0; i < 5; i++) {
+    knittingMachine.knitRow(["k1"]);
+    knittingMachine.knitRow(["k1", "k1", "k1", "k3tog"]);
+  }
+  knittingMachine.knitRow(["k1", "k3tog"]);
 
   return knittingMachine.stitches;
 };
 
 function App() {
-  const [stitchesPerRow, setStitchesPerRow] = useState(50);
-  const [numberOfRows, setNumberOfRows] = useState(3);
+  const [stitchesPerRow, setStitchesPerRow] = useState(150);
+  const [numberOfRows, setNumberOfRows] = useState(30);
   const [stitches, setStitches] = useState<Stitch[]>(getStitches(stitchesPerRow, numberOfRows));
   const [triggerColouring, setTriggerColouring] = useState(false);
 

@@ -1,0 +1,1 @@
+export type LandUsage = "water" | "land" | "glaciated_areas" | "antarctic_ice_shelves";

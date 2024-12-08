@@ -55,7 +55,7 @@ const ForceGraph = ({ stitchesPerRow, numberOfRows }: ForceGraphProps) => {
     graph.d3AlphaDecay(0.01);
     graph.nodeRelSize(nodeDistance);
     graph.linkWidth(20);
-    graph.linkVisibility(false);
+    graph.linkVisibility(true);
     graph.nodeResolution(1);
     graph.nodeThreeObject((foo) => {
       const sprite = new THREE.Sprite();
@@ -73,7 +73,6 @@ const ForceGraph = ({ stitchesPerRow, numberOfRows }: ForceGraphProps) => {
     //graph.onEngineStop(() => graph.nodeColor((node: NodeObject) => colourNode(node)));
     graph.onEngineStop(() => {
       if (engineStopped) return;
-      console.log("Callback");
       const maxY = Math.max(...nodes.map((node) => node.y as number));
       graph.zoomToFit(100);
       graph.nodeThreeObject((node: NodeObject) => {

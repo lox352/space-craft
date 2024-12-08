@@ -1,62 +1,27 @@
-import { NodeObject } from "three-forcegraph";
-import { point, booleanPointInPolygon } from "@turf/turf";
-import land from "../assets/land.json";
-import glaciated_areas from "../assets/glaciated_areas.json";
-import arctic_ice_shelves from "../assets/antarctic_ice_shelves.json";
 import { Point } from "../types/point";
+import { GlobalCoordinates } from "../types/GlobalCoordinates";
+import { getClosestColor, Palette, type RGB } from "./raster-colouring";
+import * as THREE from "three";
+// import { getLandUsage, colourByLandUsage } from "./svg-colouring";
 
-type LandUsage = "water" | "land" | "glaciated_areas" | "antarctic_ice_shelves";
+const colourPalette: RGB[] = Object.values(Palette).map((color) =>
+  color.split(",").map(Number) as RGB
+);
 
-interface GlobalCoordinates {
-  latitude: number;
-  longitude: number;
-}
-
-const checkIfLand = (latitude: number, longitude: number): LandUsage => {
-  const pt = point([longitude, latitude]);
-  if (
-    land.geometries.some((feature: any) => booleanPointInPolygon(pt, feature))
-  ) {
-    if (
-      glaciated_areas.geometries.some((feature: any) =>
-        booleanPointInPolygon(pt, feature)
-      )
-    ) {
-      return "glaciated_areas";
-    }
-
-    return "land";
-  }
-
-  if (
-    arctic_ice_shelves.geometries.some((feature: any) =>
-      booleanPointInPolygon(pt, feature)
-    )
-  ) {
-    return "antarctic_ice_shelves";
-  }
-
-  return "water";
-};
-
-const colourNode = (
+const colourNode = async (
   position: Point,
-  mayY: number
-): "blue" | "green" | "white" | "black" => {
+  mayY: number,
+  palette: RGB[] = colourPalette
+): Promise<THREE.Color> => {
   const coordinates = getGlobalCoordinates(position, mayY);
-  const landUsage = checkIfLand(coordinates.latitude, coordinates.longitude);
-  switch (landUsage) {
-    case "water":
-      return "blue";
-    case "land":
-      return "green";
-    case "glaciated_areas":
-      return "white";
-    case "antarctic_ice_shelves":
-      return "white";
-    default:
-      return "black";
+  const colour = await getClosestColor(coordinates, palette);
+  //const colour = colourByLandUsage(getLandUsage(coordinates.latitude, coordinates.longitude));
+  
+  if (!colour) {
+    console.error("Failed to get colour for node");
+    return new THREE.Color(0x000000);
   }
+  return new THREE.Color(colour[0], colour[1], colour[2]);
 };
 
 const getGlobalCoordinates = (
@@ -84,7 +49,9 @@ const getGlobalCoordinates = (
   if (y > maxY / 2) {
     return { latitude: latitudeDegrees, longitude: longitudeDegrees };
   } else {
-    const cylindricalLatitude = (90 * (y - maxY / 2)) / (maxY / 2);
+    const normalisedVerticalDistance = (y - maxY / 2) / (maxY / 2);
+    const angle = Math.asin(normalisedVerticalDistance);
+    const cylindricalLatitude = angle * (180 / Math.PI);
     return { latitude: cylindricalLatitude, longitude: longitudeDegrees };
   }
 };
