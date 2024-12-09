@@ -1,8 +1,7 @@
 import rasterGlobe from "../assets/raster_globe.tif";
 import * as geotiff from "geotiff";
 import { GlobalCoordinates } from "../types/GlobalCoordinates";
-
-type RGB = [number, number, number];
+import { RGB } from "../types/RGB";
 
 enum Palette {
   Blue = "119,159,196",
@@ -32,9 +31,6 @@ class TiffLoader {
         const rasterData = (await image.readRasters({
           interleave: true,
         })) as Uint8Array;
-
-        console.log({ rasterDataLength: rasterData.length, expectedLength: width * height * 3 });
-
 
         const result = { width, height, rasterData };
 

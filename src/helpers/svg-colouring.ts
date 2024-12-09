@@ -3,7 +3,7 @@ import land from "../assets/land.json";
 import glaciated_areas from "../assets/glaciated_areas.json";
 import arctic_ice_shelves from "../assets/antarctic_ice_shelves.json";
 import { LandUsage } from "../types/LandUsage";
-import { RGB } from "./raster-colouring";
+import { RGB } from "../types/RGB";
 
 const getLandUsage = (latitude: number, longitude: number): LandUsage => {
   const pt = point([longitude, latitude]);

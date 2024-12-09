@@ -1,6 +1,7 @@
 import { Point } from "../types/point";
 import { GlobalCoordinates } from "../types/GlobalCoordinates";
-import { getClosestColor, Palette, type RGB } from "./raster-colouring";
+import { getClosestColor, Palette } from "./raster-colouring";
+import { type RGB } from "../types/RGB";
 import * as THREE from "three";
 // import { getLandUsage, colourByLandUsage } from "./svg-colouring";
 

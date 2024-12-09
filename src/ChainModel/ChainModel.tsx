@@ -7,6 +7,7 @@ import PointMass from "./PointMass";
 import Link from "./Link";
 import * as THREE from "three";
 import { colourNode } from "../helpers/node-colouring";
+import { RGB } from "../PixelCanvas/PixelGrid";
 
 const getStitchColour =
   (stitchRefs: React.MutableRefObject<React.RefObject<RapierRigidBody>[]>) => 
@@ -65,17 +66,32 @@ const ChainModel: React.FC<ChainModelProps> = ({
     setRefsVersion((v) => v + (1 % 1000));
   }, [stitches, setRefsVersion]);
 
+  useEffect(() => {
+    if (triggerColouring) {
+      (async () => {
+        for (let i = 1; i < stitchRefs.current.length; i++) {
+          const stitchRef = stitchRefs.current[i];
+          if (!stitchRef.current) continue;
+          const colour = await getStitchColour(stitchRefs)(stitchRef);
+          const stitch = stitches[i];
+          stitch.colour = [colour.r, colour.g, colour.b];
+        }
+        resetTrigger();
+      })();
+    }
+  }, [triggerColouring, resetTrigger, stitches]);
 
   return (
     <div style={{ height: "100vh", width: "100%" }}>
       <Canvas
-        camera={{ position: [60, 15, 0] }}
+        camera={{ position: [80, 15, 0] }}
         style={{ backgroundColor: "black" }}
       >
         <OrbitControls />
         <Physics gravity={[0, 9.81, 0]} timeStep="vary" paused={false}>
           {stitches.map((stitch) => {
             const stitchRef = stitchRefs.current[stitch.id];
+
             if (!stitchRef) return null;
             return (
               <PointMass
@@ -83,10 +99,8 @@ const ChainModel: React.FC<ChainModelProps> = ({
                 rigidBodyRef={stitchRef}
                 position={stitch.position}
                 fixed={stitch.links.length <= 1}
-                getStitchColour={getStitchColour(stitchRefs)}
-                triggerColouring={triggerColouring}
-                resetTrigger={resetTrigger}
                 visible={stitch.id > 0}
+                colour={stitch.colour}
               />
             );
           })}
@@ -110,15 +124,5 @@ const ChainModel: React.FC<ChainModelProps> = ({
     </div>
   );
 };
-// {stitch.links.map((link) => {
-//   const linkedStitchRef = stitchRefs.current.get(link);
-//   if (!linkedStitchRef) return null;
-//   return (
-//     <Link
-//       key={`${stitch.id}-${link}`}
-//       bodyA={stitchRef}
-//       bodyB={linkedStitchRef}
-//     />
-//   );
-// })}
+
 export default ChainModel;

@@ -3,6 +3,7 @@ import { Point } from "../types/point";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
 import React, { useEffect, useRef } from "react";
+import { RGB } from "../PixelCanvas/PixelGrid";
 
 function createChevronTexture() {
   const size = 256; // Texture resolution
@@ -63,44 +64,29 @@ export default function PointMass({
   position,
   rigidBodyRef,
   fixed,
-  getStitchColour,
-  triggerColouring,
-  resetTrigger,
   visible,
+  colour,
 }: {
   position: Point;
   rigidBodyRef: React.RefObject<RapierRigidBody>;
   fixed: boolean;
-  getStitchColour: (
-    stitchRef: React.RefObject<RapierRigidBody>
-  ) => Promise<THREE.Color>;
-  triggerColouring: boolean;
-  resetTrigger: () => void;
   visible: boolean;
+  colour: RGB;
 }) {
-  const frameCount = useRef(0);
   const meshRef = React.createRef<THREE.Mesh>();
   const materialRef = React.createRef<THREE.ShaderMaterial>();
   const instanceColor = useRef(
-    new Float32Array([119 / 255, 159 / 255, 196 / 255])
+    new Float32Array([colour[0] / 255, colour[1] / 255, colour[2] / 255])
   );
 
   useEffect(() => {
-    const updateColor = async () => {
-      if (triggerColouring) {
-        const color = await getStitchColour(rigidBodyRef);
-        instanceColor.current[0] = color.r / 255;
-        instanceColor.current[1] = color.g / 255;
-        instanceColor.current[2] = color.b / 255;
-      }
-      resetTrigger();
-    };
-
-    updateColor();
-  }, [getStitchColour, resetTrigger, rigidBodyRef, triggerColouring]);
+    if (!instanceColor.current) return;
+        instanceColor.current[0] = colour[0] / 255;
+        instanceColor.current[1] = colour[1] / 255;
+        instanceColor.current[2] = colour[2] / 255;
+  }, [colour]);
 
   useFrame(() => {
-    frameCount.current++;
     if (rigidBodyRef.current) {
       if (materialRef.current) {
         materialRef.current.uniforms.instanceColor.value =

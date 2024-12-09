@@ -1,7 +1,9 @@
-import { Point } from "./types/point";
-import { Stitch } from "./types/stitch";
+import { Point } from "./point";
+import { Stitch } from "./stitch";
+import { StitchType } from "./StitchType";
+import { RGB } from "../types/RGB";
 
-type StitchType = "k1" | "k2tog" | "k3tog" | "join";
+const defaultColour: RGB = [255, 255, 255];
 
 class KnittingMachine {
   private stitchesPerRow: number;
@@ -21,6 +23,9 @@ class KnittingMachine {
         id: i,
         position: getStitchPosition(i),
         links,
+        fixed: true,
+        colour: defaultColour,
+        type: "k1",
       };
       this.stitches.push(newStitch);
     }
@@ -29,18 +34,15 @@ class KnittingMachine {
   }
 
   knitRow(pattern: StitchType[]): KnittingMachine {
-    const lastStitchId = this.stitches[this.stitches.length - 1].id;
-    let timesObservedInLinks = 0;
-    let i = 0;
-
-    while (timesObservedInLinks < 2) {
-      const stitch = pattern[i % pattern.length];
-      this.knit(stitch);
-      const links = this.stitches[this.stitches.length - 1].links;
-      if (links.some((link) => link === lastStitchId)) {
-        timesObservedInLinks++;
-      }
-      i++;
+    const numberOfStitchesInRow = this.numberOfStitchesInRow();
+    // console.log(`Number of stitches in row: ${numberOfStitchesInRow}`);
+    const numberOfTimesToKnitPattern = Math.floor(
+      numberOfStitchesInRow / pattern.length
+    );
+    // console.log(`Number of times to knit pattern: ${numberOfTimesToKnitPattern}`);
+    for (let i = 0; i < numberOfTimesToKnitPattern; i++) {
+      // console.log(`Knitting pattern ${i + 1} of ${numberOfTimesToKnitPattern}`);
+      this.knitPattern(pattern);
     }
 
     return this;
@@ -72,6 +74,9 @@ class KnittingMachine {
       id: lastStitch.id + 1,
       position: stitchFromLastRow.position,
       links: [stitchFromLastRow.id + 1, lastStitch.id],
+      type: "k1",
+      fixed: false,
+      colour: defaultColour,
     };
     this.stitches.push(newStitch);
 
@@ -89,6 +94,9 @@ class KnittingMachine {
         stitchFromLastRow.id + 1,
         lastStitch.id,
       ],
+      type: "k2tog",
+      fixed: false,
+      colour: defaultColour,
     };
     this.stitches.push(newStitch);
 
@@ -107,6 +115,9 @@ class KnittingMachine {
         stitchFromLastRow.id + 1,
         lastStitch.id,
       ],
+      type: "k3tog",
+      fixed: false,
+      colour: defaultColour,
     };
     this.stitches.push(newStitch);
 
@@ -119,10 +130,66 @@ class KnittingMachine {
       id: lastStitch.id + 1,
       position: lastStitch.position,
       links: [0, lastStitch.id],
+      type: "join",
+      fixed: true,
+      colour: defaultColour,
     };
     this.stitches.push(newStitch);
 
     return this;
+  }
+
+  public decreaseHemispherically(decreaseDistance: number): KnittingMachine {
+    for (let i = 0; i < decreaseDistance; i++) {
+      this.decreaseOneRowHemispherically(i, decreaseDistance);
+    }
+
+    return this;
+  }
+
+  private knitPattern(pattern: StitchType[]): void {
+    pattern.forEach((stitchType) => {
+      this.knit(stitchType);
+    });
+  }
+
+  private decreaseOneRowHemispherically(
+    rowIndex: number,
+    decreaseDistance: number
+  ): void {
+    const targetRowCount = Math.ceil(
+      this.stitchesPerRow *
+        Math.cos((rowIndex + 0.5) * (Math.PI / 2 / decreaseDistance))
+    );
+    console.log(
+      `Decrease row ${rowIndex} is targetting ${targetRowCount} stitches`
+    );
+    const currentRowCount = this.numberOfStitchesInRow();
+    console.log(`Current row has ${currentRowCount} stitches`);
+    if (currentRowCount <= 12) {
+      return;
+    }
+    const stitchesToRemove = currentRowCount - targetRowCount;
+    console.log(`Removing ${stitchesToRemove} stitches`);
+    if (stitchesToRemove <= 0) {
+      return;
+    }
+    const segmentLength = Math.ceil((currentRowCount / stitchesToRemove) / 2);
+    console.log(`Segment length is ${segmentLength}`);
+    const segment: StitchType[] = Array.from({ length: segmentLength - 1 }, () => "k1")
+
+    segment.push("k3tog");
+    console.log(`Knitting a row with repeats of stitch types: ${segment}`);
+
+    this.knitRow(segment);
+
+    const newStitchesInRow = this.numberOfStitchesInRow();
+    console.log(`Was aiming for ${targetRowCount} stitches, and got ${newStitchesInRow}`);
+  }
+
+  private numberOfStitchesInRow(): number {
+    const finalStitch = this.stitches[this.stitches.length - 1];
+    return finalStitch.id - this.stitches[finalStitch.links[0]].id;
   }
 }
 

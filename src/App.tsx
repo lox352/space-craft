@@ -5,6 +5,7 @@ import { Point } from "./types/point";
 import { Stitch } from "./types/stitch";
 import KnittingMachine from "./types/KnittingMachine";
 import ChainModel from "./ChainModel/ChainModel";
+import KnittingPattern from "./KnittingPattern";
 
 const generateCircle =
   (numPoints: number) =>
@@ -25,19 +26,18 @@ const getStitches = (
   for (let i = 1; i < numberOfRows; i++) {
     knittingMachine.knitRow(["k1"]);
   }
-  for (let i = 0; i < 5; i++) {
-    knittingMachine.knitRow(["k1"]);
-    knittingMachine.knitRow(["k1", "k1", "k1", "k3tog"]);
-  }
-  knittingMachine.knitRow(["k1", "k3tog"]);
+  
+  knittingMachine.decreaseHemispherically(Math.floor(stitchesPerRow / 4));
 
   return knittingMachine.stitches;
 };
 
 function App() {
   const [stitchesPerRow, setStitchesPerRow] = useState(150);
-  const [numberOfRows, setNumberOfRows] = useState(30);
-  const [stitches, setStitches] = useState<Stitch[]>(getStitches(stitchesPerRow, numberOfRows));
+  const [numberOfRows, setNumberOfRows] = useState(20);
+  const [stitches, setStitches] = useState<Stitch[]>(
+    getStitches(stitchesPerRow, numberOfRows)
+  );
   const [triggerColouring, setTriggerColouring] = useState(false);
 
   const handleColouring = () => {
@@ -45,7 +45,16 @@ function App() {
   };
 
   useEffect(() => {
-    setStitches(getStitches(stitchesPerRow, numberOfRows));
+    console.log("Regenerating stitches");
+    setStitches((oldStitches) => {
+      const newStitches = getStitches(stitchesPerRow, numberOfRows);
+      newStitches.forEach((stitch, index) => {
+        if (index < newStitches.length && oldStitches[index]) {
+          stitch.colour = oldStitches[index].colour;
+        }
+      });
+      return newStitches;
+    });
   }, [stitchesPerRow, numberOfRows]);
 
   return (
@@ -86,6 +95,8 @@ function App() {
             <div className="spinner"></div>
           </div>
         )}
+        <KnittingPattern stitches={stitches} setStitches={setStitches} />
+
         <ChainModel
           stitches={stitches}
           triggerColouring={triggerColouring}
@@ -97,30 +108,3 @@ function App() {
 }
 
 export default App;
-
-// function App() {
-//   const [stitchesPerRow, setStitchesPerRow] = useState(144);
-//   const [numberOfRows, setNumberOfRows] = useState(20);
-
-//   return (
-//     <>
-//       <input
-//         type="range"
-//         min="50"
-//         max="200"
-//         value={stitchesPerRow}
-//         onChange={(e) => setStitchesPerRow(Number(e.target.value))}
-//       />
-//       <p>Stitches per row: {stitchesPerRow}</p>
-//       <input
-//         type="range"
-//         min="1"
-//         max="100"
-//         value={numberOfRows}
-//         onChange={(e) => setNumberOfRows(Number(e.target.value))}
-//       />
-//       <p>Number of Rows: {numberOfRows}</p>
-//       <ForceGraph stitchesPerRow={stitchesPerRow} numberOfRows={numberOfRows} />
-//     </>
-//   );
-// }
