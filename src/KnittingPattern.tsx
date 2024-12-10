@@ -65,83 +65,83 @@ const KnittingPattern: React.FC<KnittingPatternProps> = ({ stitches }) => {
   return (
     <div
       style={{
-        display: "grid",
-        gridTemplateRows: `repeat(${numRows}, 1fr)`,
-        gridTemplateColumns: `repeat(${numCols}, 1fr)`,
-        gap: "0px",
-        width: "100%", // Ensure the grid fills the parent container
-        height: "100%", // Ensure the grid fills the parent container
+      display: "grid",
+      gridTemplateRows: `repeat(${numRows}, 1fr`,
+      gridTemplateColumns: `repeat(${numCols}, 10px`,
+      gap: "0px",
+      minHeight: "30vh",
+      overflow: "auto"
       }}
     >
       {filteredStitches.map((stitch) => {
-        const position = normalizedPositions[stitch.id];
-        return (
+      const position = normalizedPositions[stitch.id];
+      return (
+        <div
+        key={stitch.id}
+        style={{
+          gridRow: position.row + 1,
+          gridColumn: position.col + 1,
+          backgroundColor: `rgb(${stitch.colour.join(",")})`,
+          border: "1px solid black",
+          textAlign: "center",
+          aspectRatio: "1 / 1", // Maintain square shape
+          position: "relative", // Needed for the diagonal line
+        }}
+        >
+        {stitch.type === "k2tog" && (
           <div
-            key={stitch.id}
+          style={{
+            position: "absolute",
+            top: "14%",
+            left: "15%",
+            width: "100%",
+            height: "100%",
+            borderTop: "1px solid black",
+            transform: "rotate(45deg)",
+            transformOrigin: "-0.5px 0",
+          }}
+          />
+        )}
+        {stitch.type === "k3tog" && (
+          <React.Fragment>
+          <div
             style={{
-              gridRow: position.row + 1,
-              gridColumn: position.col + 1,
-              backgroundColor: `rgb(${stitch.colour.join(",")})`,
-              border: "1px solid black",
-              textAlign: "center",
-              aspectRatio: "1 / 1", // Maintain square shape
-              position: "relative", // Needed for the diagonal line
+            position: "absolute",
+            left: "calc(-50% - 0.5px)",
+            top: "calc(10%)",
+            width: "100%",
+            height: "85%",
+            borderRight: "1px solid black",
+            transformOrigin: "top right",
+            transform: "rotate(20deg)",
             }}
-          >
-            {stitch.type === "k2tog" && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: "14%",
-                  left: "15%",
-                  width: "100%",
-                  height: "100%",
-                  borderTop: "1px solid black",
-                  transform: "rotate(45deg)",
-                  transformOrigin: "-0.5px 0",
-                }}
-              />
-            )}
-            {stitch.type === "k3tog" && (
-              <React.Fragment>
-                <div
-                  style={{
-                    position: "absolute",
-                    left: "calc(-50% - 0.5px)",
-                    top: "calc(10%)",
-                    width: "100%",
-                    height: "85%",
-                    borderRight: "1px solid black",
-                    transformOrigin: "top right",
-                    transform: "rotate(20deg)",
-                  }}
-                />
-                <div
-                  style={{
-                    position: "absolute",
-                    left: "calc(-50% - 0.5px)",
-                    top: "calc(10%)",
-                    width: "100%",
-                    height: "80%",
-                    borderRight: "1px solid black",
-                  }}
-                />
-                                <div
-                  style={{
-                    position: "absolute",
-                    left: "calc(-50% - 0.5px)",
-                    top: "calc(10%)",
-                    width: "100%",
-                    height: "85%",
-                    borderRight: "1px solid black",
-                    transformOrigin: "top right",
-                    transform: "rotate(-20deg)",
-                  }}
-                />
-              </React.Fragment>
-            )}
-          </div>
-        );
+          />
+          <div
+            style={{
+            position: "absolute",
+            left: "calc(-50% - 0.5px)",
+            top: "calc(10%)",
+            width: "100%",
+            height: "80%",
+            borderRight: "1px solid black",
+            }}
+          />
+          <div
+            style={{
+            position: "absolute",
+            left: "calc(-50% - 0.5px)",
+            top: "calc(10%)",
+            width: "100%",
+            height: "85%",
+            borderRight: "1px solid black",
+            transformOrigin: "top right",
+            transform: "rotate(-20deg)",
+            }}
+          />
+          </React.Fragment>
+        )}
+        </div>
+      );
       })}
     </div>
   );

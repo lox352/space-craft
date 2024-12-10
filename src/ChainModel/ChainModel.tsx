@@ -7,10 +7,9 @@ import PointMass from "./PointMass";
 import Link from "./Link";
 import * as THREE from "three";
 import { colourNode } from "../helpers/node-colouring";
-import { RGB } from "../PixelCanvas/PixelGrid";
 
 const getStitchColour =
-  (stitchRefs: React.MutableRefObject<React.RefObject<RapierRigidBody>[]>) => 
+  (stitchRefs: React.MutableRefObject<React.RefObject<RapierRigidBody>[]>) =>
   async (stitchRef: React.RefObject<RapierRigidBody>): Promise<THREE.Color> => {
     if (!stitchRefs.current || !stitchRef.current)
       return new THREE.Color(0x000000); // Black
@@ -33,7 +32,7 @@ const ChainModel: React.FC<ChainModelProps> = ({
   stitches,
   triggerColouring,
   resetTrigger,
- }) => {
+}) => {
   const setRefsVersion = useState(0)[1];
 
   const stitchRefs = useRef<React.RefObject<RapierRigidBody>[]>(
@@ -82,46 +81,49 @@ const ChainModel: React.FC<ChainModelProps> = ({
   }, [triggerColouring, resetTrigger, stitches]);
 
   return (
-    <div style={{ height: "100vh", width: "100%" }}>
-      <Canvas
-        camera={{ position: [80, 15, 0] }}
-        style={{ backgroundColor: "black" }}
+    <Canvas
+      camera={{ position: [0, 100, 100] }}
+      style={{ height: "400px", backgroundColor: "rgb(20, 20, 20)" }}
+    >
+      <OrbitControls />
+      <Physics
+        gravity={[0, 9.81, 0]}
+        timeStep="vary"
+        paused={false}
+        updateLoop="independent"
       >
-        <OrbitControls />
-        <Physics gravity={[0, 9.81, 0]} timeStep="vary" paused={false}>
-          {stitches.map((stitch) => {
-            const stitchRef = stitchRefs.current[stitch.id];
+        {stitches.map((stitch) => {
+          const stitchRef = stitchRefs.current[stitch.id];
 
-            if (!stitchRef) return null;
+          if (!stitchRef) return null;
+          return (
+            <PointMass
+              key={stitch.id}
+              rigidBodyRef={stitchRef}
+              position={stitch.position}
+              fixed={stitch.links.length <= 1}
+              visible={stitch.id > 0}
+              colour={stitch.colour}
+            />
+          );
+        })}
+        {stitches.flatMap((stitch) =>
+          stitch.links.map((link) => {
+            const stitchRef = stitchRefs.current[stitch.id];
+            const linkedStitchRef = stitchRefs.current[link];
+            if (!stitchRef || !linkedStitchRef) return null;
             return (
-              <PointMass
-                key={stitch.id}
-                rigidBodyRef={stitchRef}
-                position={stitch.position}
-                fixed={stitch.links.length <= 1}
-                visible={stitch.id > 0}
-                colour={stitch.colour}
+              <Link
+                key={`${stitch.id}-${link}`}
+                bodyA={stitchRef}
+                bodyB={linkedStitchRef}
+                maxLength={2}
               />
             );
-          })}
-          {stitches.flatMap((stitch) =>
-            stitch.links.map((link) => {
-              const stitchRef = stitchRefs.current[stitch.id];
-              const linkedStitchRef = stitchRefs.current[link];
-              if (!stitchRef || !linkedStitchRef) return null;
-              return (
-                <Link
-                  key={`${stitch.id}-${link}`}
-                  bodyA={stitchRef}
-                  bodyB={linkedStitchRef}
-                  maxLength={2}
-                />
-              );
-            })
-          )}
-        </Physics>
-      </Canvas>
-    </div>
+          })
+        )}
+      </Physics>
+    </Canvas>
   );
 };
 

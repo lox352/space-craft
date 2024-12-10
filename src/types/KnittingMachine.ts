@@ -35,13 +35,10 @@ class KnittingMachine {
 
   knitRow(pattern: StitchType[]): KnittingMachine {
     const numberOfStitchesInRow = this.numberOfStitchesInRow();
-    // console.log(`Number of stitches in row: ${numberOfStitchesInRow}`);
     const numberOfTimesToKnitPattern = Math.floor(
       numberOfStitchesInRow / pattern.length
     );
-    // console.log(`Number of times to knit pattern: ${numberOfTimesToKnitPattern}`);
     for (let i = 0; i < numberOfTimesToKnitPattern; i++) {
-      // console.log(`Knitting pattern ${i + 1} of ${numberOfTimesToKnitPattern}`);
       this.knitPattern(pattern);
     }
 
@@ -161,30 +158,21 @@ class KnittingMachine {
       this.stitchesPerRow *
         Math.cos((rowIndex + 0.5) * (Math.PI / 2 / decreaseDistance))
     );
-    console.log(
-      `Decrease row ${rowIndex} is targetting ${targetRowCount} stitches`
-    );
+
     const currentRowCount = this.numberOfStitchesInRow();
-    console.log(`Current row has ${currentRowCount} stitches`);
     if (currentRowCount <= 12) {
       return;
     }
     const stitchesToRemove = currentRowCount - targetRowCount;
-    console.log(`Removing ${stitchesToRemove} stitches`);
     if (stitchesToRemove <= 0) {
       return;
     }
     const segmentLength = Math.ceil((currentRowCount / stitchesToRemove) / 2);
-    console.log(`Segment length is ${segmentLength}`);
     const segment: StitchType[] = Array.from({ length: segmentLength - 1 }, () => "k1")
 
     segment.push("k3tog");
-    console.log(`Knitting a row with repeats of stitch types: ${segment}`);
 
     this.knitRow(segment);
-
-    const newStitchesInRow = this.numberOfStitchesInRow();
-    console.log(`Was aiming for ${targetRowCount} stitches, and got ${newStitchesInRow}`);
   }
 
   private numberOfStitchesInRow(): number {
