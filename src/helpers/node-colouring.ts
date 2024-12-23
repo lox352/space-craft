@@ -1,9 +1,7 @@
-import { Point } from "../types/point";
+import { Point } from "../types/Point";
 import { GlobalCoordinates } from "../types/GlobalCoordinates";
 import { getClosestColor, Palette } from "./raster-colouring";
 import { type RGB } from "../types/RGB";
-import * as THREE from "three";
-// import { getLandUsage, colourByLandUsage } from "./svg-colouring";
 
 const colourPalette: RGB[] = Object.values(Palette).map((color) =>
   color.split(",").map(Number) as RGB
@@ -11,18 +9,17 @@ const colourPalette: RGB[] = Object.values(Palette).map((color) =>
 
 const colourNode = async (
   position: Point,
-  mayY: number,
+  maxY: number,
   palette: RGB[] = colourPalette
-): Promise<THREE.Color> => {
-  const coordinates = getGlobalCoordinates(position, mayY);
+): Promise<RGB> => {
+  const coordinates = getGlobalCoordinates(position, maxY);
   const colour = await getClosestColor(coordinates, palette);
-  //const colour = colourByLandUsage(getLandUsage(coordinates.latitude, coordinates.longitude));
   
   if (!colour) {
     console.error("Failed to get colour for node");
-    return new THREE.Color(0x000000);
+    return [0, 0, 0];
   }
-  return new THREE.Color(colour[0], colour[1], colour[2]);
+  return colour;
 };
 
 const getGlobalCoordinates = (

@@ -1,9 +1,8 @@
 import { BallCollider, RapierRigidBody, RigidBody } from "@react-three/rapier";
-import { Point } from "../types/point";
+import { Point } from "../types/Point";
 import * as THREE from "three";
 import { useFrame } from "@react-three/fiber";
-import React, { useEffect, useRef } from "react";
-import { RGB } from "../PixelCanvas/PixelGrid";
+import React from "react";
 
 const vertexShader = `
   varying vec2 vUv;
@@ -35,34 +34,23 @@ export default function PointMass({
   rigidBodyRef,
   fixed,
   visible,
-  colour,
-  chevronTexture
+  colourRef,
+  chevronTexture,
+  geometry,
 }: {
   position: Point;
   rigidBodyRef: React.RefObject<RapierRigidBody>;
   fixed: boolean;
   visible: boolean;
-  colour: RGB;
+  colourRef: React.MutableRefObject<Float32Array<ArrayBuffer>>;
   chevronTexture: THREE.Texture;
+  geometry: THREE.PlaneGeometry;
 }) {
   const meshRef = React.createRef<THREE.Mesh>();
-  const materialRef = React.createRef<THREE.ShaderMaterial>();
-  const instanceColor = useRef(
-    new Float32Array([colour[0] / 255, colour[1] / 255, colour[2] / 255])
-  );
-
-  useEffect(() => {
-    if (!instanceColor.current) return;
-        instanceColor.current[0] = colour[0] / 255;
-        instanceColor.current[1] = colour[1] / 255;
-        instanceColor.current[2] = colour[2] / 255;
-  }, [colour]);
 
   useFrame(() => {
-    if (rigidBodyRef.current) {
-      if (meshRef.current) {
-        meshRef.current.lookAt(new THREE.Vector3(0, 0, 0)); // Target point (0, 0, 0) or you can change it
-      }
+    if (rigidBodyRef.current && meshRef.current) {
+      meshRef.current.lookAt(new THREE.Vector3(0, 0, 0)); // Target point (0, 0, 0) or you can change it
     }
   });
 
@@ -73,22 +61,20 @@ export default function PointMass({
       collisionGroups={0b0010} // Assign to a specific group
       type={fixed ? "fixed" : "dynamic"}
       position={[position.x, position.y, position.z]}
-      linearDamping={0.9}
-      angularDamping={0.9}
+      linearDamping={0.8}
+      angularDamping={0.8}
     >
       <BallCollider args={[0.02]} />
-      {visible && (
-        <mesh scale={2} ref={meshRef}>
-          <planeGeometry args={[1, 1]} />
+      {visible && colourRef.current && (
+        <mesh scale={2} ref={meshRef} geometry={geometry}>
           <shaderMaterial
-            ref={materialRef}
             uniforms={{
               map: { value: chevronTexture },
-              instanceColor: { value: instanceColor.current },
+              instanceColor: { value: colourRef.current },
             }}
             vertexShader={vertexShader}
             fragmentShader={fragmentShader}
-            transparent={true}
+            transparent
             side={THREE.DoubleSide}
           />
         </mesh>

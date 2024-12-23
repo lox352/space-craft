@@ -1,7 +1,8 @@
-import { Point } from "./point";
-import { Stitch } from "./stitch";
+import { Point } from "./Point";
+import { Stitch } from "./Stitch";
 import { StitchType } from "./StitchType";
 import { RGB } from "../types/RGB";
+import { adjacentStitchDistance, verticalStitchDistance } from "../constants";
 
 const defaultColour: RGB = [255, 255, 255];
 
@@ -65,13 +66,24 @@ class KnittingMachine {
   }
 
   knit1(): KnittingMachine {
+    const stitchesInCurrentRow = this.numberOfStitchesInRow();
     const lastStitch = this.stitches[this.stitches.length - 1];
+
     const stitchFromLastRow = this.stitches[lastStitch.links[0]];
-    const newPosition = {...stitchFromLastRow.position, y: stitchFromLastRow.position.y + 1};
+    const links = [stitchFromLastRow.id + 1, lastStitch.id];
+
+    const linkedStitch = this.stitches[links[0]];
+    const radiusScaleFactor = ((adjacentStitchDistance * stitchesInCurrentRow) / (2 * Math.PI)) / (linkedStitch.position.x ** 2 + linkedStitch.position.z ** 2) ** 0.5;
+    const newPosition = {
+      y: linkedStitch.position.y + verticalStitchDistance,
+      x: linkedStitch.position.x * radiusScaleFactor,
+      z: linkedStitch.position.z * radiusScaleFactor,
+    };
+
     const newStitch: Stitch = {
       id: lastStitch.id + 1,
       position: newPosition,
-      links: [stitchFromLastRow.id + 1, lastStitch.id],
+      links: links,
       type: "k1",
       fixed: false,
       colour: defaultColour,
@@ -82,16 +94,28 @@ class KnittingMachine {
   }
 
   knit2Tog(): KnittingMachine {
+    const stitchesInCurrentRow = this.numberOfStitchesInRow() - 1;
     const lastStitch = this.stitches[this.stitches.length - 1];
+
     const stitchFromLastRow = this.stitches[lastStitch.links[0]];
+    const links = [
+      stitchFromLastRow.id + 2,
+      stitchFromLastRow.id + 1,
+      lastStitch.id,
+    ];
+
+    const linkedStitch = this.stitches[links[1]];
+    const radiusScaleFactor = ((adjacentStitchDistance * stitchesInCurrentRow) / (2 * Math.PI)) / (linkedStitch.position.x ** 2 + linkedStitch.position.z ** 2) ** 0.5;
+    const newPosition = {
+      y: linkedStitch.position.y + verticalStitchDistance,
+      x: linkedStitch.position.x * radiusScaleFactor,
+      z: linkedStitch.position.z * radiusScaleFactor,
+    };
+
     const newStitch: Stitch = {
       id: lastStitch.id + 1,
-      position: stitchFromLastRow.position,
-      links: [
-        stitchFromLastRow.id + 2,
-        stitchFromLastRow.id + 1,
-        lastStitch.id,
-      ],
+      position: newPosition,
+      links: links,
       type: "k2tog",
       fixed: false,
       colour: defaultColour,
@@ -102,18 +126,30 @@ class KnittingMachine {
   }
 
   knit3Tog(): KnittingMachine {
+    const stitchesInCurrentRow = this.numberOfStitchesInRow() - 2;
     const lastStitch = this.stitches[this.stitches.length - 1];
+
     const stitchFromLastRow = this.stitches[lastStitch.links[0]];
+    const links = [
+      stitchFromLastRow.id + 3,
+      stitchFromLastRow.id + 2,
+      stitchFromLastRow.id + 1,
+      lastStitch.id,
+    ];
+
+    const linkedStitch = this.stitches[links[1]];
+    const radiusScaleFactor = ((adjacentStitchDistance * stitchesInCurrentRow) / (2 * Math.PI)) / (linkedStitch.position.x ** 2 + linkedStitch.position.z ** 2) ** 0.5;
+    const newPosition = {
+      y: linkedStitch.position.y + verticalStitchDistance,
+      x: linkedStitch.position.x * radiusScaleFactor,
+      z: linkedStitch.position.z * radiusScaleFactor,
+    };
+
     const newStitch: Stitch = {
       id: lastStitch.id + 1,
-      position: stitchFromLastRow.position,
-      links: [
-        stitchFromLastRow.id + 3,
-        stitchFromLastRow.id + 2,
-        stitchFromLastRow.id + 1,
-        lastStitch.id,
-      ],
-      type: "k3tog",
+      position: newPosition,
+      links: links,
+      type: "k2tog",
       fixed: false,
       colour: defaultColour,
     };
@@ -168,8 +204,11 @@ class KnittingMachine {
     if (stitchesToRemove <= 0) {
       return;
     }
-    const segmentLength = Math.ceil((currentRowCount / stitchesToRemove) / 2);
-    const segment: StitchType[] = Array.from({ length: segmentLength - 1 }, () => "k1")
+    const segmentLength = Math.ceil(currentRowCount / stitchesToRemove / 2);
+    const segment: StitchType[] = Array.from(
+      { length: segmentLength - 1 },
+      () => "k1"
+    );
 
     segment.push("k3tog");
 

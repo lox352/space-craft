@@ -1,4 +1,4 @@
-import { Point } from "../types/point"
+import { Point } from "../types/Point"
 import { type LinkObject, type NodeObject } from "three-forcegraph";
 import { toNode } from "./node-object";
 

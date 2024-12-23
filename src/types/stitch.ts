@@ -1,5 +1,5 @@
 import { RGB } from "../PixelCanvas/PixelGrid";
-import { Point } from "./point";
+import { Point } from "./Point";
 import { StitchType } from "./StitchType";
 
 export interface Stitch {

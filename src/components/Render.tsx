@@ -1,15 +1,17 @@
 import React, { useCallback } from "react";
 import ChainModel from "../ChainModel/ChainModel";
-import { Stitch } from "../types/stitch";
+import { Stitch } from "../types/Stitch";
 
 interface RenderProps {
   stitches: Stitch[];
+  setStitches: React.Dispatch<React.SetStateAction<Stitch[]>>;
   triggerColouring: boolean;
   setTriggerColouring: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const Render: React.FC<RenderProps> = ({
   stitches,
+  setStitches,
   triggerColouring,
   setTriggerColouring,
 }) => {

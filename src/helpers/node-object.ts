@@ -1,4 +1,4 @@
-import { Point } from "../types/point";
+import { Point } from "../types/Point";
 import { NodeObject } from "three-forcegraph";
 
 const toNode = (point: Point, id: number | string): NodeObject => {

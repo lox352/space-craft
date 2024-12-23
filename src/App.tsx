@@ -4,10 +4,12 @@ import Home from "./components/Home";
 import Design from "./components/Design";
 import Render from "./components/Render";
 import { useState } from "react";
-import { Stitch } from "./types/stitch";
+import { Stitch } from "./types/Stitch";
+import { getStitches } from "./helpers/stitches";
+import { defaultNumberOfRows, defaultStitchesPerRow } from "./constants";
 
 function App() {
-  const [stitches, setStitches] = useState<Stitch[]>([]);
+  const [stitches, setStitches] = useState<Stitch[]>(getStitches(defaultStitchesPerRow, defaultNumberOfRows));
   const [triggerColouring, setTriggerColouring] = useState(false);
 
   return (
@@ -20,7 +22,7 @@ function App() {
         />
         <Route
           path="/render"
-          element={<Render stitches={stitches} triggerColouring={triggerColouring} setTriggerColouring={setTriggerColouring} />}
+          element={<Render stitches={stitches} setStitches={setStitches} triggerColouring={triggerColouring} setTriggerColouring={setTriggerColouring} />}
         />
       </Routes>
     </Router>

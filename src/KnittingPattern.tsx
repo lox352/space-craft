@@ -1,5 +1,5 @@
 import React from "react";
-import { Stitch } from "./types/stitch";
+import { Stitch } from "./types/Stitch";
 
 interface KnittingPatternProps {
   stitches: Stitch[];
