@@ -60,11 +60,6 @@ export default function PointMass({
 
   useFrame(() => {
     if (rigidBodyRef.current) {
-      if (materialRef.current) {
-        materialRef.current.uniforms.instanceColor.value =
-          instanceColor.current;
-      }
-
       if (meshRef.current) {
         meshRef.current.lookAt(new THREE.Vector3(0, 0, 0)); // Target point (0, 0, 0) or you can change it
       }
@@ -87,7 +82,6 @@ export default function PointMass({
           <planeGeometry args={[1, 1]} />
           <shaderMaterial
             ref={materialRef}
-            attach="material"
             uniforms={{
               map: { value: chevronTexture },
               instanceColor: { value: instanceColor.current },
