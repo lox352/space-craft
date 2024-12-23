@@ -67,9 +67,10 @@ class KnittingMachine {
   knit1(): KnittingMachine {
     const lastStitch = this.stitches[this.stitches.length - 1];
     const stitchFromLastRow = this.stitches[lastStitch.links[0]];
+    const newPosition = {...stitchFromLastRow.position, y: stitchFromLastRow.position.y + 1};
     const newStitch: Stitch = {
       id: lastStitch.id + 1,
-      position: stitchFromLastRow.position,
+      position: newPosition,
       links: [stitchFromLastRow.id + 1, lastStitch.id],
       type: "k1",
       fixed: false,

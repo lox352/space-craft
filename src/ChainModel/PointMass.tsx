@@ -48,7 +48,7 @@ export default function PointMass({
   const meshRef = React.createRef<THREE.Mesh>();
   const materialRef = React.createRef<THREE.ShaderMaterial>();
   const instanceColor = useRef(
-    new Float32Array([119 / 255, 159 / 255, 196 / 255])
+    new Float32Array([colour[0] / 255, colour[1] / 255, colour[2] / 255])
   );
 
   useEffect(() => {

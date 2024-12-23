@@ -123,7 +123,7 @@ const ChainModel: React.FC<ChainModelProps> = ({
         gravity={[0, 5, 0]}
         timeStep="vary"
         paused={false}
-        // updateLoop="independent"
+        updateLoop="independent"
       >
         {stitches.map((stitch) => {
           const stitchRef = stitchRefs.current[stitch.id];
@@ -146,8 +146,9 @@ const ChainModel: React.FC<ChainModelProps> = ({
             const stitchRef = stitchRefs.current[stitch.id];
             const linkedStitchRef = stitchRefs.current[link];
             if (!stitchRef || !linkedStitchRef) return null;
-            // const stitchLength = Math.abs(stitch.id - link) === 1 ? 2 : 1;
-            const stitchLength = 2;
+            const stitchLength = stitch.id - link === 1 ? 2 : 1.5;
+            // console.log(`Connecting ${stitch.id} to ${link} using rope length ${stitchLength}`);
+            //const stitchLength = 2;
             return (
               <Link
                 key={`${stitch.id}-${link}`}
