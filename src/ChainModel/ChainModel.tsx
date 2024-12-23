@@ -8,6 +8,37 @@ import Link from "./Link";
 import * as THREE from "three";
 import { colourNode } from "../helpers/node-colouring";
 
+function createChevronTexture() {
+  const size = 256; // Texture resolution
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+
+  if (ctx) {
+    // Background (optional)
+    ctx.clearRect(0, 0, size, size);
+
+    ctx.fillStyle = "white";
+
+    // Draw downward-facing chevron
+    ctx.beginPath();
+    ctx.moveTo(size / 2, size * 1); // Bottom center (tip of the V)
+    ctx.lineTo(size * 0, size * 0); // Left top
+    ctx.lineTo(size * 0.25, size * 0); // Left top
+    ctx.lineTo(size * 0.5, size * 0.5); // Center bottom left
+    ctx.lineTo(size * 0.75, size * 0); // Right top
+    ctx.lineTo(size * 1, size * 0); // Right top
+    ctx.lineTo(size / 2, size * 1); // Back to bottom center
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  return new THREE.CanvasTexture(canvas);
+}
+
+const chevronTexture = createChevronTexture();
+
 const getStitchColour =
   (stitchRefs: React.MutableRefObject<React.RefObject<RapierRigidBody>[]>) =>
   async (stitchRef: React.RefObject<RapierRigidBody>): Promise<THREE.Color> => {
@@ -28,6 +59,7 @@ interface ChainModelProps {
   triggerColouring: boolean;
   resetTrigger: () => void;
 }
+
 const ChainModel: React.FC<ChainModelProps> = ({
   stitches,
   triggerColouring,
@@ -75,6 +107,7 @@ const ChainModel: React.FC<ChainModelProps> = ({
           const stitch = stitches[i];
           stitch.colour = [colour.r, colour.g, colour.b];
         }
+        console.log("Colouring finished");
         resetTrigger();
       })();
     }
@@ -83,14 +116,14 @@ const ChainModel: React.FC<ChainModelProps> = ({
   return (
     <Canvas
       camera={{ position: [0, 100, 100] }}
-      style={{ height: "400px", backgroundColor: "rgb(20, 20, 20)" }}
+      style={{ backgroundColor: "rgb(20, 20, 20)" }}
     >
       <OrbitControls />
       <Physics
-        gravity={[0, 9.81, 0]}
+        gravity={[0, 5, 0]}
         timeStep="vary"
         paused={false}
-        updateLoop="independent"
+        // updateLoop="independent"
       >
         {stitches.map((stitch) => {
           const stitchRef = stitchRefs.current[stitch.id];
@@ -104,6 +137,7 @@ const ChainModel: React.FC<ChainModelProps> = ({
               fixed={stitch.links.length <= 1}
               visible={stitch.id > 0}
               colour={stitch.colour}
+              chevronTexture={chevronTexture}
             />
           );
         })}
@@ -112,12 +146,14 @@ const ChainModel: React.FC<ChainModelProps> = ({
             const stitchRef = stitchRefs.current[stitch.id];
             const linkedStitchRef = stitchRefs.current[link];
             if (!stitchRef || !linkedStitchRef) return null;
+            // const stitchLength = Math.abs(stitch.id - link) === 1 ? 2 : 1;
+            const stitchLength = 2;
             return (
               <Link
                 key={`${stitch.id}-${link}`}
                 bodyA={stitchRef}
                 bodyB={linkedStitchRef}
-                maxLength={2}
+                maxLength={stitchLength}
               />
             );
           })

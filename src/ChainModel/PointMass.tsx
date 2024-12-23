@@ -5,34 +5,6 @@ import { useFrame } from "@react-three/fiber";
 import React, { useEffect, useRef } from "react";
 import { RGB } from "../PixelCanvas/PixelGrid";
 
-function createChevronTexture() {
-  const size = 256; // Texture resolution
-  const canvas = document.createElement("canvas");
-  canvas.width = size;
-  canvas.height = size;
-  const ctx = canvas.getContext("2d");
-
-  if (ctx) {
-    // Background (optional)
-    ctx.clearRect(0, 0, size, size);
-
-    ctx.fillStyle = "white";
-
-    // Draw downward-facing chevron
-    ctx.beginPath();
-    ctx.moveTo(size / 2, size * 1); // Bottom center (tip of the V)
-    ctx.lineTo(size * 0, size * 0); // Left top
-    ctx.lineTo(size * 0.25, size * 0); // Left top
-    ctx.lineTo(size * 0.5, size * 0.5); // Center bottom left
-    ctx.lineTo(size * 0.75, size * 0); // Right top
-    ctx.lineTo(size * 1, size * 0); // Right top
-    ctx.lineTo(size / 2, size * 1); // Back to bottom center
-    ctx.closePath();
-    ctx.fill();
-  }
-
-  return new THREE.CanvasTexture(canvas);
-}
 const vertexShader = `
   varying vec2 vUv;
   varying vec3 vColor;
@@ -58,25 +30,25 @@ const fragmentShader = `
   }
 `;
 
-const chevronTexture = createChevronTexture();
-
 export default function PointMass({
   position,
   rigidBodyRef,
   fixed,
   visible,
   colour,
+  chevronTexture
 }: {
   position: Point;
   rigidBodyRef: React.RefObject<RapierRigidBody>;
   fixed: boolean;
   visible: boolean;
   colour: RGB;
+  chevronTexture: THREE.Texture;
 }) {
   const meshRef = React.createRef<THREE.Mesh>();
   const materialRef = React.createRef<THREE.ShaderMaterial>();
   const instanceColor = useRef(
-    new Float32Array([colour[0] / 255, colour[1] / 255, colour[2] / 255])
+    new Float32Array([119 / 255, 159 / 255, 196 / 255])
   );
 
   useEffect(() => {
