@@ -11,21 +11,21 @@ function App() {
   const [stitches, setStitches] = useState<Stitch[]>([]);
 
   return (
-    <Router>
+    <Router basename={import.meta.env.DEV ? "/space-craft" : undefined}>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route
-          path="/design"
-          element={<Design setStitches={setStitches} />}
-        />
-        <Route
-          path="/render"
-          element={<Render stitches={stitches} setStitches={setStitches} />}
-        />
-        <Route
-          path="/pattern"
-          element={<Pattern stitches={stitches} />}
-        />
+      <Route path="/" element={<Home />} />
+      <Route
+        path="/design"
+        element={<Design setStitches={setStitches} />}
+      />
+      <Route
+        path="/render"
+        element={<Render stitches={stitches} setStitches={setStitches} />}
+      />
+      <Route
+        path="/pattern"
+        element={<Pattern stitches={stitches} />}
+      />
       </Routes>
     </Router>
   );
