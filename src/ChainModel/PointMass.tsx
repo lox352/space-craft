@@ -42,7 +42,7 @@ export default function PointMass({
   rigidBodyRef: React.RefObject<RapierRigidBody>;
   fixed: boolean;
   visible: boolean;
-  colourRef: React.MutableRefObject<Float32Array<ArrayBuffer>>;
+  colourRef: React.MutableRefObject<Float32Array>;
   chevronTexture: THREE.Texture;
   geometry: THREE.PlaneGeometry;
 }) {

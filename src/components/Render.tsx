@@ -1,29 +1,20 @@
-import React, { useCallback } from "react";
+import React from "react";
 import ChainModel from "../ChainModel/ChainModel";
 import { Stitch } from "../types/Stitch";
+import { useNavigate } from "react-router-dom";
 
 interface RenderProps {
   stitches: Stitch[];
   setStitches: React.Dispatch<React.SetStateAction<Stitch[]>>;
-  triggerColouring: boolean;
-  setTriggerColouring: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const Render: React.FC<RenderProps> = ({
-  stitches,
-  setStitches,
-  triggerColouring,
-  setTriggerColouring,
-}) => {
-  const resetTrigger = () => {
-    console.log("Colouring finished");
-    setTriggerColouring(false);
-  };
+const Render: React.FC<RenderProps> = ({ stitches, setStitches }) => {
+  const simulationActive = React.useRef(true);
+  const navigate = useNavigate();
 
-  const handleApplyColouring = () => {
-    console.log("Colouring started");
+  const generatePattern = () => {
+    navigate('/space-craft/pattern');
 
-    setTriggerColouring(true);
   };
 
   return (
@@ -34,8 +25,8 @@ const Render: React.FC<RenderProps> = ({
       <div style={{ height: "500px" }}>
         <ChainModel
           stitches={stitches}
-          triggerColouring={triggerColouring}
-          resetTrigger={resetTrigger}
+          setStitches={setStitches}
+          simulationActive={simulationActive}
         />
       </div>
       <button
@@ -47,9 +38,10 @@ const Render: React.FC<RenderProps> = ({
           borderRadius: "4px",
           cursor: "pointer",
         }}
-        onClick={handleApplyColouring}
+        disabled={simulationActive.current}
+        onClick={generatePattern}
       >
-        Apply Colouring
+        {simulationActive.current ? "Dying in progress..." : "Generate Pattern"}
       </button>
     </div>
   );

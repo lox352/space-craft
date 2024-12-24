@@ -7,22 +7,26 @@ import { useState } from "react";
 import { Stitch } from "./types/Stitch";
 import { getStitches } from "./helpers/stitches";
 import { defaultNumberOfRows, defaultStitchesPerRow } from "./constants";
+import Pattern from "./components/Pattern";
 
 function App() {
   const [stitches, setStitches] = useState<Stitch[]>(getStitches(defaultStitchesPerRow, defaultNumberOfRows));
-  const [triggerColouring, setTriggerColouring] = useState(false);
 
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/space-craft" element={<Home />} />
         <Route
-          path="/design"
+          path="/space-craft/design"
           element={<Design setStitches={setStitches} />}
         />
         <Route
-          path="/render"
-          element={<Render stitches={stitches} setStitches={setStitches} triggerColouring={triggerColouring} setTriggerColouring={setTriggerColouring} />}
+          path="/space-craft/render"
+          element={<Render stitches={stitches} setStitches={setStitches} />}
+        />
+        <Route
+          path="/space-craft/pattern"
+          element={<Pattern stitches={stitches} />}
         />
       </Routes>
     </Router>

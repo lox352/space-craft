@@ -3,7 +3,6 @@ import { Stitch } from "./types/Stitch";
 
 interface KnittingPatternProps {
   stitches: Stitch[];
-  setStitches: React.Dispatch<React.SetStateAction<Stitch[]>>;
 }
 
 const KnittingPattern: React.FC<KnittingPatternProps> = ({ stitches }) => {

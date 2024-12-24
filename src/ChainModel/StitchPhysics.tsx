@@ -7,6 +7,7 @@ import { colourNode } from "../helpers/node-colouring";
 import * as THREE from "three";
 import { RGB } from "../types/RGB";
 import { adjacentStitchDistance, verticalStitchDistance } from "../constants";
+import { useFrame } from "@react-three/fiber";
 
 function createChevronTexture() {
   const size = 256; // Texture resolution
@@ -51,35 +52,87 @@ const getStitchColour =
 
 interface StitchPhysicsProps {
   stitchesRef: React.MutableRefObject<Stitch[]>;
-  triggerColouring: boolean;
-  resetTrigger: () => void;
+  setStitches: React.Dispatch<React.SetStateAction<Stitch[]>>;
+  simulationActive: React.MutableRefObject<boolean>;
 }
 
 const StitchPhysics: React.FC<StitchPhysicsProps> = ({
   stitchesRef,
-  triggerColouring,
-  resetTrigger,
+  setStitches,
+  simulationActive,
 }) => {
   const setRefsVersion = useState(0)[1];
+  const frameNumber = useRef(0);
   const stitches = stitchesRef.current;
 
   const stitchRefs = useRef<React.RefObject<RapierRigidBody>[]>(
     stitches.map(() => React.createRef())
   );
 
-  const colourRefs = useRef<
-    React.MutableRefObject<Float32Array<ArrayBuffer>>[]
-  >(
-    stitches.map(() => {
-      const ref = React.createRef() as MutableRefObject<
-        Float32Array<ArrayBuffer>
-      >;
+  const colourRefs = useRef<React.MutableRefObject<Float32Array>[]>(
+    stitches.map((stitch) => {
+      const ref = React.createRef() as MutableRefObject<Float32Array>;
       if (!ref.current) {
-        ref.current = new Float32Array([1, 1, 1]);
+        ref.current = new Float32Array([
+          stitch.colour[0] / 255,
+          stitch.colour[1] / 255,
+          stitch.colour[2] / 255,
+        ]);
       }
       return ref;
     })
   );
+
+  useFrame(() => {
+    if (!simulationActive.current) return;
+    frameNumber.current++;
+    // Check velocities of all rigid bodies
+    let totalMotion = 0;
+    stitchRefs.current.forEach((stitchRef) => {
+      const velocity = stitchRef.current?.linvel();
+      const motionChange = velocity
+        ? Math.abs(velocity.x) + Math.abs(velocity.y) + Math.abs(velocity.z)
+        : 0;
+      totalMotion += motionChange;
+    });
+
+    // Stop simulation if total motion is below a threshold
+    const threshold = 0.8 * stitchRefs.current.length;
+    if (totalMotion > threshold || frameNumber.current < 10) {
+      console.log(
+        `Total motion: ${totalMotion} and frame number: ${frameNumber.current}. Threshold: ${threshold}`
+      );
+      return;
+    }
+
+    console.log("Simulation stopped");
+
+    simulationActive.current = false;
+    (async () => {
+      const maxY = stitchRefs.current.reduce((max, ref) => {
+        const y = ref.current?.translation().y || 0;
+        return y > max ? y : max;
+      }, 0);
+
+      for (let i = 1; i < stitchRefs.current.length; i++) {
+        const stitchRef = stitchRefs.current[i];
+        if (!stitchRef.current) continue;
+        const colourRef = colourRefs.current[i];
+        if (!colourRef.current) continue;
+
+        const colour = await getStitchColour(maxY)(stitchRef);
+        setStitches((stitches) =>
+          stitches.map((stitch) =>
+            stitch.id === i ? { ...stitch, colour } : stitch
+          )
+        );
+        colourRef.current[0] = colour[0] / 255;
+        colourRef.current[1] = colour[1] / 255;
+        colourRef.current[2] = colour[2] / 255;
+      }
+      console.log("Colouring finished");
+    })();
+  });
 
   useEffect(() => {
     for (let i = stitchRefs.current.length; i < stitches.length; i++) {
@@ -108,37 +161,12 @@ const StitchPhysics: React.FC<StitchPhysicsProps> = ({
   }, [stitches, setRefsVersion]);
 
   useEffect(() => {
-    if (triggerColouring && colourRefs.current) {
-      (async () => {
-        const maxY = stitchRefs.current.reduce((max, ref) => {
-          const y = ref.current?.translation().y || 0;
-          return y > max ? y : max;
-        }, 0);
-
-        for (let i = 1; i < stitchRefs.current.length; i++) {
-          const stitchRef = stitchRefs.current[i];
-          if (!stitchRef.current) continue;
-          const colourRef = colourRefs.current[i];
-          if (!colourRef.current) continue;
-
-          const colour = await getStitchColour(maxY)(stitchRef);
-          colourRef.current[0] = colour[0] / 255;
-          colourRef.current[1] = colour[1] / 255;
-          colourRef.current[2] = colour[2] / 255;
-        }
-        console.log("Colouring finished");
-        resetTrigger();
-      })();
-    }
-  }, [triggerColouring, resetTrigger, stitches]);
-
-    useEffect(() => {
-      return () => {
-        chevronTexture.dispose();
-        geometry.dispose();
-        console.log("StitchPhysics has unmounted");
-      };
-    }, []);
+    return () => {
+      chevronTexture.dispose();
+      geometry.dispose();
+      console.log("StitchPhysics has unmounted");
+    };
+  }, []);
 
   return (
     <React.Fragment>

@@ -9,14 +9,14 @@ import { verticalStitchDistance } from "../constants";
 
 interface ChainModelProps {
   stitches: Stitch[];
-  triggerColouring: boolean;
-  resetTrigger: () => void;
+  setStitches: React.Dispatch<React.SetStateAction<Stitch[]>>;
+  simulationActive: React.MutableRefObject<boolean>;
 }
 
 const ChainModel: React.FC<ChainModelProps> = ({
   stitches,
-  triggerColouring,
-  resetTrigger,
+  setStitches,
+  simulationActive,
 }) => {
   const stitchesRef = useRef(stitches);
   const stitchesPerRow = stitches.filter(stitch => stitch.fixed).length;
@@ -40,12 +40,12 @@ const ChainModel: React.FC<ChainModelProps> = ({
         timeStep="vary"
         updateLoop="independent"
         numSolverIterations={20}
-        paused={false}
+        paused={!simulationActive.current}
       >
         <StitchPhysics
           stitchesRef={stitchesRef}
-          triggerColouring={triggerColouring}
-          resetTrigger={resetTrigger}
+          setStitches={setStitches}
+          simulationActive={simulationActive}
         />
       </Physics>
     </Canvas>
