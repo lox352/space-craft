@@ -22,7 +22,7 @@ const Design: React.FC<PatternProps> = ({ setStitches }) => {
   return (
     <div style={{ textAlign: "left", padding: "20px" }}>
       <h1 style={{ fontSize: "2.5rem", marginBottom: "20px" }}>Design</h1>
-      <div>
+      <div style={{ marginBottom: "20px" }}>
         <label>
           Stitches per row
           <br />
@@ -33,7 +33,7 @@ const Design: React.FC<PatternProps> = ({ setStitches }) => {
           />
         </label>
       </div>
-      <div>
+      <div style={{ marginBottom: "20px" }}>
         <label>
           Number of rows before decreasing
           <br />
@@ -55,7 +55,7 @@ const Design: React.FC<PatternProps> = ({ setStitches }) => {
         }}
         onClick={handleViewAndColour}
       >
-        View and Colour
+        Knit and Dye
       </button>
     </div>
   );

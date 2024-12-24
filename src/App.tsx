@@ -5,12 +5,10 @@ import Design from "./components/Design";
 import Render from "./components/Render";
 import { useState } from "react";
 import { Stitch } from "./types/Stitch";
-import { getStitches } from "./helpers/stitches";
-import { defaultNumberOfRows, defaultStitchesPerRow } from "./constants";
 import Pattern from "./components/Pattern";
 
 function App() {
-  const [stitches, setStitches] = useState<Stitch[]>(getStitches(defaultStitchesPerRow, defaultNumberOfRows));
+  const [stitches, setStitches] = useState<Stitch[]>([]);
 
   return (
     <Router>

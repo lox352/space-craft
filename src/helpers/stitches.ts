@@ -24,7 +24,7 @@ const getStitches = (
     knittingMachine.knitRow(["k1"]);
   }
 
-  knittingMachine.decreaseHemispherically(Math.floor(stitchesPerRow * adjacentStitchDistance / 4));
+  knittingMachine.decreaseHemispherically(Math.floor(stitchesPerRow / 4));
 
   return knittingMachine.stitches;
 };
