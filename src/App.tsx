@@ -11,7 +11,7 @@ function App() {
   const [stitches, setStitches] = useState<Stitch[]>([]);
 
   return (
-    <Router basename={import.meta.env.DEV ? "/space-craft" : undefined}>
+    <Router>
       <Routes>
       <Route path="/" element={<Home />} />
       <Route
