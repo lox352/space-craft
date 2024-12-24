@@ -53,13 +53,15 @@ const getStitchColour =
 interface StitchPhysicsProps {
   stitchesRef: React.MutableRefObject<Stitch[]>;
   setStitches: React.Dispatch<React.SetStateAction<Stitch[]>>;
-  simulationActive: React.MutableRefObject<boolean>;
+  simulationActive: boolean;
+  setSimulationActive: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const StitchPhysics: React.FC<StitchPhysicsProps> = ({
   stitchesRef,
   setStitches,
   simulationActive,
+  setSimulationActive
 }) => {
   const setRefsVersion = useState(0)[1];
   const frameNumber = useRef(0);
@@ -84,7 +86,8 @@ const StitchPhysics: React.FC<StitchPhysicsProps> = ({
   );
 
   useFrame(() => {
-    if (!simulationActive.current) return;
+    if (frameNumber.current === 0) { setSimulationActive(true); }
+    if (!simulationActive) return;
     frameNumber.current++;
     // Check velocities of all rigid bodies
     let totalMotion = 0;
@@ -107,7 +110,7 @@ const StitchPhysics: React.FC<StitchPhysicsProps> = ({
 
     console.log("Simulation stopped");
 
-    simulationActive.current = false;
+    setSimulationActive(false);
     (async () => {
       const maxY = stitchRefs.current.reduce((max, ref) => {
         const y = ref.current?.translation().y || 0;

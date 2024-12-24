@@ -9,7 +9,7 @@ interface RenderProps {
 }
 
 const Render: React.FC<RenderProps> = ({ stitches, setStitches }) => {
-  const simulationActive = React.useRef(true);
+  const [simulationActive, setSimulationActive] = React.useState(false);
   const navigate = useNavigate();
 
   const generatePattern = () => {
@@ -27,6 +27,7 @@ const Render: React.FC<RenderProps> = ({ stitches, setStitches }) => {
           stitches={stitches}
           setStitches={setStitches}
           simulationActive={simulationActive}
+          setSimulationActive={setSimulationActive}
         />
       </div>
       <button
@@ -38,10 +39,10 @@ const Render: React.FC<RenderProps> = ({ stitches, setStitches }) => {
           borderRadius: "4px",
           cursor: "pointer",
         }}
-        disabled={simulationActive.current}
+        disabled={simulationActive}
         onClick={generatePattern}
       >
-        {simulationActive.current ? "Dying in progress..." : "Generate Pattern"}
+        {simulationActive ? "Dying in progress..." : "Generate Pattern"}
       </button>
     </div>
   );

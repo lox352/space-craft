@@ -10,13 +10,15 @@ import { verticalStitchDistance } from "../constants";
 interface ChainModelProps {
   stitches: Stitch[];
   setStitches: React.Dispatch<React.SetStateAction<Stitch[]>>;
-  simulationActive: React.MutableRefObject<boolean>;
+  simulationActive: boolean;
+  setSimulationActive: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ChainModel: React.FC<ChainModelProps> = ({
   stitches,
   setStitches,
   simulationActive,
+  setSimulationActive,
 }) => {
   const stitchesRef = useRef(stitches);
   const stitchesPerRow = stitches.filter(stitch => stitch.fixed).length;
@@ -34,18 +36,19 @@ const ChainModel: React.FC<ChainModelProps> = ({
       style={{ backgroundColor: "rgb(30, 30, 30)" }}
       shadows={"basic"}
     >
-      <OrbitControls target={new THREE.Vector3(0, 5 * roughHeight / 12, 0 )} />
+      <OrbitControls target={new THREE.Vector3(0, 5 * roughHeight / 12, 0 )} enabled={!simulationActive} />
       <Physics
         gravity={[0, 9.81, 0]}
         timeStep="vary"
         updateLoop="independent"
         numSolverIterations={20}
-        paused={!simulationActive.current}
+        paused={!simulationActive}
       >
         <StitchPhysics
           stitchesRef={stitchesRef}
           setStitches={setStitches}
           simulationActive={simulationActive}
+          setSimulationActive={setSimulationActive}
         />
       </Physics>
     </Canvas>
