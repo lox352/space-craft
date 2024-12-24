@@ -5,7 +5,7 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
 
   const handleBegin = () => {
-    navigate('/space-craft/design');
+    navigate('/design');
   };
 
   return (

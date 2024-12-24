@@ -28,7 +28,7 @@ const Render: React.FC<RenderProps> = ({ stitches, setStitches }) => {
   const navigate = useNavigate();
 
   const generatePattern = () => {
-    navigate('/space-craft/pattern');
+    navigate('/pattern');
   };
 
   return (

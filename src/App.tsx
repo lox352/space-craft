@@ -13,17 +13,17 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/space-craft" element={<Home />} />
+        <Route path="/" element={<Home />} />
         <Route
-          path="/space-craft/design"
+          path="/design"
           element={<Design setStitches={setStitches} />}
         />
         <Route
-          path="/space-craft/render"
+          path="/render"
           element={<Render stitches={stitches} setStitches={setStitches} />}
         />
         <Route
-          path="/space-craft/pattern"
+          path="/pattern"
           element={<Pattern stitches={stitches} />}
         />
       </Routes>

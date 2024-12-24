@@ -16,7 +16,7 @@ const Design: React.FC<PatternProps> = ({ setStitches }) => {
 
   const handleViewAndColour = () => {
     setStitches(getStitches(stitchesPerRow, numberOfRows));
-    navigate("/space-craft/render");
+    navigate("/render");
   };
 
   return (
