@@ -33,7 +33,7 @@ const ChainModel: React.FC<ChainModelProps> = ({
   return (
     <Canvas
       camera={{ position: [0, roughHeight / 2, 4 * stitchesPerRow / 5] }}
-      style={{ backgroundColor: "rgb(30, 30, 30)" }}
+      style={{ backgroundColor: "rgb(20, 20, 20)" }}
       shadows={"basic"}
     >
       <OrbitControls target={new THREE.Vector3(0, 5 * roughHeight / 12, 0 )} enabled={!simulationActive} />
