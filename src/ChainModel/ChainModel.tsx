@@ -40,7 +40,6 @@ const ChainModel: React.FC<ChainModelProps> = ({
       <Physics
         gravity={[0, 9.81, 0]}
         timeStep="vary"
-        updateLoop="independent"
         numSolverIterations={20}
         paused={!simulationActive}
       >

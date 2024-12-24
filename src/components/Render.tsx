@@ -19,16 +19,14 @@ const Render: React.FC<RenderProps> = ({ stitches, setStitches }) => {
     }
 
     if (simulationRunCount.current === 1 && !simulationActive) {
-      setTimeout(() => {
-        setSimulationCompleted(true);
-      }, 2000);
+      setSimulationCompleted(true);
     }
   }, [simulationActive]);
 
   const navigate = useNavigate();
 
   const generatePattern = () => {
-    navigate('/pattern');
+    navigate("/pattern");
   };
 
   return (
