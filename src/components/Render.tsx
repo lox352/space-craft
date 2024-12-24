@@ -10,11 +10,25 @@ interface RenderProps {
 
 const Render: React.FC<RenderProps> = ({ stitches, setStitches }) => {
   const [simulationActive, setSimulationActive] = React.useState(false);
+  const [simulationCompleted, setSimulationCompleted] = React.useState(false);
+  const simulationRunCount = React.useRef(0);
+
+  React.useEffect(() => {
+    if (simulationActive) {
+      simulationRunCount.current += 1;
+    }
+
+    if (simulationRunCount.current === 1 && !simulationActive) {
+      setTimeout(() => {
+        setSimulationCompleted(true);
+      }, 2000);
+    }
+  }, [simulationActive]);
+
   const navigate = useNavigate();
 
   const generatePattern = () => {
     navigate('/space-craft/pattern');
-
   };
 
   return (
@@ -42,7 +56,7 @@ const Render: React.FC<RenderProps> = ({ stitches, setStitches }) => {
         disabled={simulationActive}
         onClick={generatePattern}
       >
-        {simulationActive ? "Dying in progress..." : "Generate Pattern"}
+        {!simulationCompleted ? "Dying in progress..." : "Generate Pattern"}
       </button>
     </div>
   );
