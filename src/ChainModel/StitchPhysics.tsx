@@ -52,9 +52,9 @@ const getStitchColour =
 
 interface StitchPhysicsProps {
   stitchesRef: React.MutableRefObject<Stitch[]>;
-  setStitches: React.Dispatch<React.SetStateAction<Stitch[]>>;
+  setStitches?: React.Dispatch<React.SetStateAction<Stitch[]>>;
   simulationActive: boolean;
-  setSimulationActive: React.Dispatch<React.SetStateAction<boolean>>;
+  setSimulationActive?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const StitchPhysics: React.FC<StitchPhysicsProps> = ({
@@ -86,6 +86,7 @@ const StitchPhysics: React.FC<StitchPhysicsProps> = ({
   );
 
   useFrame(() => {
+    if (!setSimulationActive || !setStitches) return;
     if (frameNumber.current === 0) { setSimulationActive(true); }
     if (!simulationActive) return;
     frameNumber.current++;
@@ -124,9 +125,10 @@ const StitchPhysics: React.FC<StitchPhysicsProps> = ({
         if (!colourRef.current) continue;
 
         const colour = await getStitchColour(maxY)(stitchRef);
+        const position = stitchRef.current.translation();
         setStitches((stitches) =>
           stitches.map((stitch) =>
-            stitch.id === i ? { ...stitch, colour } : stitch
+            stitch.id === i ? { ...stitch, colour, position } : stitch
           )
         );
         colourRef.current[0] = colour[0] / 255;

@@ -9,9 +9,9 @@ import { verticalStitchDistance } from "../constants";
 
 interface ChainModelProps {
   stitches: Stitch[];
-  setStitches: React.Dispatch<React.SetStateAction<Stitch[]>>;
+  setStitches?: React.Dispatch<React.SetStateAction<Stitch[]>>;
   simulationActive: boolean;
-  setSimulationActive: React.Dispatch<React.SetStateAction<boolean>>;
+  setSimulationActive?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const ChainModel: React.FC<ChainModelProps> = ({

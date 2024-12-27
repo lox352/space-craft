@@ -10,7 +10,7 @@ interface StitchPosition {
   col: number;
 }
 
-const StitchLabel: React.FC<{
+const LabelRight: React.FC<{
   row: number;
   col: number;
   children: React.ReactNode;
@@ -21,10 +21,36 @@ const StitchLabel: React.FC<{
     style={{
       gridRow: row,
       gridColumn: col,
+      backgroundColor: "rgb(20, 20, 20)",
+      color: "white",
+      textAlign: "right",
+      aspectRatio: "1 / 1",
+      position: "relative",
+      right: 0,
+      paddingLeft: "2px",
+    }}
+  >
+    {children}
+  </div>
+);
+
+const LabelBottom: React.FC<{
+  row: number;
+  col: number;
+  children: React.ReactNode;
+}> = ({ row, col, children }) => (
+  <div
+    className="grid-label"
+    id={`label-row-${row}-col-${col}`}
+    style={{
+      gridRow: row,
+      gridColumn: col,
+      backgroundColor: "rgb(20, 20, 20)",
       color: "white",
       textAlign: "left",
       aspectRatio: "1 / 1",
       position: "relative",
+      bottom: 0,
     }}
   >
     {children}
@@ -42,7 +68,7 @@ const StitchBox: React.FC<{
     id={`stitch-${stitch.id}-row-${position.row}-col-${position.col}`}
     style={{
       gridRow: numRows + position.row,
-      gridColumn: numCols + position.col + 1,
+      gridColumn: numCols + position.col,
       backgroundColor: `rgb(${stitch.colour.join(",")})`,
       border: "1px solid black",
       borderLeftWidth: (position.col - 1) % 5 === 0 ? "2px" : "1px",
@@ -147,11 +173,6 @@ const KnittingPattern: React.FC<KnittingPatternProps> = ({ stitches }) => {
   const numRows = 1 - minRow;
   const numCols = 1 - minCol;
 
-  const saveToLocalStorage = () => {
-    localStorage.setItem("stitches", JSON.stringify(stitches));
-    alert("Stitches saved to local storage!");
-  };
-
   return (
     <div>
       <div
@@ -159,59 +180,16 @@ const KnittingPattern: React.FC<KnittingPatternProps> = ({ stitches }) => {
         style={{
           display: "grid",
           gridTemplateRows: `repeat(${numRows + 1}, 10px)`,
-          gridTemplateColumns: `repeat(${numCols + 2}, 10px)`,
+          gridTemplateColumns: `repeat(${numCols + 1}, 10px)`,
           gap: "0px",
           minHeight: `${(numRows + 2) * 10}px`,
           overflowX: "auto",
           overflowY: "hidden",
         }}
       >
-        {[...Array(numCols)].map((_, colIndex) => {
-          if ((colIndex + 1) % 5 === 0) {
-            return (
-              <StitchLabel
-                key={`col-label-${colIndex}`}
-                row={numRows + 1}
-                col={1 + numCols - colIndex}
-              >
-                {colIndex + 1}
-              </StitchLabel>
-            );
-          }
-        })}
-        {[...Array(numRows)].map((_, rowIndex) => {
-          if ((rowIndex + 1) % 5 === 0) {
-            return (
-              <StitchLabel
-                key={`col-label-${rowIndex}`}
-                col={numCols + 2}
-                row={numRows - rowIndex}
-              >
-                {rowIndex + 1}
-              </StitchLabel>
-            );
-          }
-        })}
-        {filteredStitches.map((stitch) => {
+        {filteredStitches.map((stitch, i) => {
           const position = stitchPositions[stitch.id];
           return (
-            // <React.Fragment key={stitch.id}>
-            //   {position.row === 0 && (position.col - 1) % 5 === 0 && (
-            //     <StitchLabel
-            //       row={numRows + 1}
-            //       col={numCols + position.col}
-            //     >
-            //       {1 - position.col}
-            //     </StitchLabel>
-            //   )}
-            //   {position.col === 0 && (position.row - 1) % 5 === 0 && (
-            //     <StitchLabel
-            //       row={numRows + position.row}
-            //       col={numCols + 2}
-            //     >
-            //       {1 - position.row}
-            //     </StitchLabel>
-            //   )}
             <StitchBox
               key={`box-${stitch.id}`}
               stitch={stitch}
@@ -219,24 +197,35 @@ const KnittingPattern: React.FC<KnittingPatternProps> = ({ stitches }) => {
               numRows={numRows}
               numCols={numCols}
             />
-            // </React.Fragment>
           );
         })}
+        {[...Array(numCols)].map((_, colIndex) => {
+          if ((colIndex + 1) % 5 === 0) {
+            return (
+              <LabelBottom
+                key={`col-label-${colIndex}`}
+                row={numRows + 1}
+                col={numCols - colIndex}
+              >
+                {colIndex + 1}
+              </LabelBottom>
+            );
+          }
+        })}
+        {[...Array(numRows)].map((_, rowIndex) => {
+          if ((rowIndex + 1) % 5 === 0) {
+            return (
+              <LabelRight
+                key={`col-label-${rowIndex}`}
+                col={numCols + 1}
+                row={numRows - rowIndex}
+              >
+                {rowIndex + 1}
+              </LabelRight>
+            );
+          }
+        })}
       </div>
-      <button
-        style={{
-          marginTop: "20px",
-          backgroundColor: "#3f51b5",
-          color: "white",
-          padding: "10px 20px",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-        }}
-        onClick={saveToLocalStorage}
-      >
-        Save Pattern
-      </button>
     </div>
   );
 };
