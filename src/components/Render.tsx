@@ -11,6 +11,7 @@ interface RenderProps {
 const Render: React.FC<RenderProps> = ({ stitches, setStitches }) => {
   const [simulationActive, setSimulationActive] = React.useState(false);
   const [simulationCompleted, setSimulationCompleted] = React.useState(false);
+  const [patternGenerating, setPatternGenerating] = React.useState(false);
   const simulationRunCount = React.useRef(0);
 
   React.useEffect(() => {
@@ -26,15 +27,21 @@ const Render: React.FC<RenderProps> = ({ stitches, setStitches }) => {
   const navigate = useNavigate();
 
   const generatePattern = () => {
-    navigate("/pattern");
+    setPatternGenerating(true);
   };
+
+  React.useEffect(() => {
+    if (patternGenerating) {
+        navigate("/pattern");
+    }
+  }, [navigate, patternGenerating]);
 
   return (
     <div style={{ textAlign: "left", padding: "20px" }}>
       <h1 style={{ fontSize: "2.5rem", marginBottom: "20px" }}>
         Dying Your Hat
       </h1>
-      <div style={{ height: "500px" }}>
+      <div style={{ height: "350px" }}>
         <ChainModel
           stitches={stitches}
           setStitches={setStitches}
@@ -54,7 +61,7 @@ const Render: React.FC<RenderProps> = ({ stitches, setStitches }) => {
         disabled={simulationActive}
         onClick={generatePattern}
       >
-        {!simulationCompleted ? "Dying in progress..." : "Generate Pattern"}
+        {!simulationCompleted ? "Dying in progress..." : patternGenerating ? "Generating pattern..." : "Generate Pattern"}
       </button>
     </div>
   );
