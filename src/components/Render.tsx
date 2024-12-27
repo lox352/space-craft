@@ -32,7 +32,7 @@ const Render: React.FC<RenderProps> = ({ stitches, setStitches }) => {
 
   React.useEffect(() => {
     if (patternGenerating) {
-        navigate("/pattern");
+      navigate("/pattern");
     }
   }, [navigate, patternGenerating]);
 
@@ -49,6 +49,10 @@ const Render: React.FC<RenderProps> = ({ stitches, setStitches }) => {
           setSimulationActive={setSimulationActive}
         />
       </div>
+      <p>
+        {simulationCompleted &&
+          "Pinch and zoom to see the pattern in more detail."}
+      </p>
       <button
         style={{
           backgroundColor: "#3f51b5",
@@ -61,7 +65,11 @@ const Render: React.FC<RenderProps> = ({ stitches, setStitches }) => {
         disabled={simulationActive}
         onClick={generatePattern}
       >
-        {!simulationCompleted ? "Dying in progress..." : patternGenerating ? "Generating pattern..." : "Generate Pattern"}
+        {!simulationCompleted
+          ? "Dying in progress..."
+          : patternGenerating
+          ? "Generating pattern..."
+          : "Generate Pattern"}
       </button>
     </div>
   );

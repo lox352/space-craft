@@ -187,7 +187,7 @@ const KnittingPattern: React.FC<KnittingPatternProps> = ({ stitches }) => {
           overflowY: "hidden",
         }}
       >
-        {filteredStitches.map((stitch, i) => {
+        {filteredStitches.map((stitch) => {
           const position = stitchPositions[stitch.id];
           return (
             <StitchBox
