@@ -55,13 +55,15 @@ interface StitchPhysicsProps {
   setStitches?: React.Dispatch<React.SetStateAction<Stitch[]>>;
   simulationActive: boolean;
   setSimulationActive?: React.Dispatch<React.SetStateAction<boolean>>;
+  onAnyStitchRendered?: () => void;
 }
 
 const StitchPhysics: React.FC<StitchPhysicsProps> = ({
   stitchesRef,
   setStitches,
   simulationActive,
-  setSimulationActive
+  setSimulationActive,
+  onAnyStitchRendered,
 }) => {
   const setRefsVersion = useState(0)[1];
   const frameNumber = useRef(0);
@@ -86,6 +88,7 @@ const StitchPhysics: React.FC<StitchPhysicsProps> = ({
   );
 
   useFrame(() => {
+    if (onAnyStitchRendered && frameNumber.current === 0) { onAnyStitchRendered(); }
     if (!setSimulationActive || !setStitches) return;
     if (frameNumber.current === 0) { setSimulationActive(true); }
     if (!simulationActive) return;

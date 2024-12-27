@@ -12,6 +12,7 @@ interface ChainModelProps {
   setStitches?: React.Dispatch<React.SetStateAction<Stitch[]>>;
   simulationActive: boolean;
   setSimulationActive?: React.Dispatch<React.SetStateAction<boolean>>;
+  onAnyStitchRendered?: () => void;
 }
 
 const ChainModel: React.FC<ChainModelProps> = ({
@@ -19,6 +20,7 @@ const ChainModel: React.FC<ChainModelProps> = ({
   setStitches,
   simulationActive,
   setSimulationActive,
+  onAnyStitchRendered,
 }) => {
   const stitchesRef = useRef(stitches);
   const stitchesPerRow = stitches.filter(stitch => stitch.fixed).length;
@@ -48,6 +50,7 @@ const ChainModel: React.FC<ChainModelProps> = ({
           setStitches={setStitches}
           simulationActive={simulationActive}
           setSimulationActive={setSimulationActive}
+          onAnyStitchRendered={onAnyStitchRendered}
         />
       </Physics>
     </Canvas>

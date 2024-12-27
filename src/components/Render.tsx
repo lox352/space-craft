@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ChainModel from "../ChainModel/ChainModel";
 import { Stitch } from "../types/Stitch";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +9,7 @@ interface RenderProps {
 }
 
 const Render: React.FC<RenderProps> = ({ stitches, setStitches }) => {
+  const [anyStichRendered, setAnyStitchRendered] = React.useState(false);
   const [simulationActive, setSimulationActive] = React.useState(false);
   const [simulationCompleted, setSimulationCompleted] = React.useState(false);
   const [patternGenerating, setPatternGenerating] = React.useState(false);
@@ -36,6 +37,17 @@ const Render: React.FC<RenderProps> = ({ stitches, setStitches }) => {
     }
   }, [navigate, patternGenerating]);
 
+  useEffect(() => {
+    if (stitches.length === 0) {
+      navigate("/");
+    }
+  }, [stitches, navigate]);
+
+  const thereAreStitches = stitches.length > 0;
+  if (!thereAreStitches) {
+    return null;
+  }
+  
   return (
     <div style={{ textAlign: "left", padding: "20px" }}>
       <h1 style={{ fontSize: "2.5rem", marginBottom: "20px" }}>
@@ -47,30 +59,37 @@ const Render: React.FC<RenderProps> = ({ stitches, setStitches }) => {
           setStitches={setStitches}
           simulationActive={simulationActive}
           setSimulationActive={setSimulationActive}
+          onAnyStitchRendered={() => {
+            setAnyStitchRendered(true);
+          }}
         />
       </div>
-      <p>
-        {simulationCompleted &&
-          "Pinch and zoom to see the pattern in more detail."}
-      </p>
-      <button
-        style={{
-          backgroundColor: "#3f51b5",
-          color: "white",
-          padding: "10px 20px",
-          border: "none",
-          borderRadius: "4px",
-          cursor: "pointer",
-        }}
-        disabled={simulationActive}
-        onClick={generatePattern}
-      >
-        {!simulationCompleted
+      <i>
+        {!anyStichRendered
+          ? "Summoning stitches..."
+          : !simulationCompleted
           ? "Dying in progress..."
-          : patternGenerating
-          ? "Generating pattern..."
-          : "Generate Pattern"}
-      </button>
+          : simulationCompleted &&
+            "Pinch and zoom to see the pattern in more detail"}
+      </i>
+      {simulationCompleted && (
+        <div style={{ marginTop: "10px" }}>
+          <button
+            style={{
+              backgroundColor: "#3f51b5",
+              color: "white",
+              padding: "10px 20px",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+            disabled={simulationActive}
+            onClick={generatePattern}
+          >
+            {patternGenerating ? "Generating pattern..." : "Generate Pattern"}
+          </button>
+        </div>
+      )}
     </div>
   );
 };

@@ -18,7 +18,7 @@ const Pattern: React.FC<PatternProps> = ({ stitches }) => {
       progress: 0,
     };
     localStorage.setItem(newId, JSON.stringify(savedPattern));
-    window.history.pushState({}, '', `/pattern/${newId}`);
+    window.location.hash = `#/pattern/${newId}`;
     setPatternSaved(true);
     alert(
       "Stitches saved to local storage! This pattern may be accessed at any time from the homepage."

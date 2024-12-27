@@ -16,7 +16,6 @@ class KnittingMachine {
     this.rng = seedrandom(stitchesPerRow.toString())
     this.stitches = [];
     this.stitchesPerRow = stitchesPerRow;
-    console.log(`Creating knitting machine with ${stitchesPerRow} stitches per row`);
   }
 
   castOnRow(
@@ -93,7 +92,6 @@ class KnittingMachine {
       colour: defaultColour,
     };
 
-    console.log("k1");
     this.stitches.push(newStitch);
 
     return this;
@@ -127,7 +125,6 @@ class KnittingMachine {
       colour: defaultColour,
     };
 
-    console.log("k2tog");
     this.stitches.push(newStitch);
 
     return this;
@@ -162,7 +159,6 @@ class KnittingMachine {
       colour: defaultColour,
     };
 
-    console.log("k3tog");
     this.stitches.push(newStitch);
 
     return this;
@@ -210,7 +206,6 @@ class KnittingMachine {
     if (currentRowCount <= 12) {
       return;
     }
-    console.log(`Decreasing row ${rowIndex} from ${currentRowCount} stitches to ${targetRowCount} stitches`);
 
     const stitchesToRemove = currentRowCount - targetRowCount;
 
@@ -220,7 +215,6 @@ class KnittingMachine {
     }
     
     const segmentLength = Math.floor(currentRowCount / (stitchesToRemove / 2));
-    console.log(`Removing ${stitchesToRemove} stitches in ${stitchesToRemove / 2} segments of length ${segmentLength}`);
     const randomIndex = Math.floor(this.rng() * (segmentLength));
     const segment: StitchType[] = Array.from(
       { length: randomIndex },
@@ -231,7 +225,6 @@ class KnittingMachine {
       segment.push("k1");
     }
 
-    console.log(`Actual segment length: ${segment.length}`);
     this.knitRow(segment);
   }
 
