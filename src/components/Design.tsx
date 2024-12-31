@@ -25,7 +25,7 @@ const InputField: React.FC<InputFieldProps> = ({
   value,
   valueSetter,
 }) => (
-  <div style={{ marginBottom: "20px" }}>
+  <div style={{ marginBottom: "15px" }}>
     <label>
       {label}
       <br />
@@ -136,6 +136,43 @@ const h3Style = {
   marginTop: "5px",
   marginBottom: "5px",
 };
+interface ToggleAdvancedOptionsProps {
+  showAdvancedOptions: boolean;
+  setShowAdvancedOptions: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const ToggleAdvancedOptions: React.FC<ToggleAdvancedOptionsProps> = ({
+  showAdvancedOptions,
+  setShowAdvancedOptions,
+}) => (
+  <h1
+    style={{
+      backgroundColor: "transparent",
+      color: "white",
+      padding: "10px 0",
+      border: "none",
+      cursor: "pointer",
+      marginTop: "5px",
+      marginBottom: "0px",
+      display: "flex",
+      alignItems: "center",
+      fontSize: "1.25rem",
+      borderBottom: showAdvancedOptions ? "1px solid white" : "none",
+    }}
+    onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
+  >
+    {showAdvancedOptions ? "Hide Advanced Options" : "Show Advanced Options"}
+    <span
+      style={{
+        marginLeft: "10px",
+        transform: showAdvancedOptions ? "rotate(180deg)" : "rotate(0deg)",
+        transition: "transform 0.3s",
+      }}
+    >
+      ▼
+    </span>
+  </h1>
+);
 
 const Design: React.FC<PatternProps> = ({
   setStitches,
@@ -195,6 +232,8 @@ const Design: React.FC<PatternProps> = ({
     navigate("/render");
   };
 
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
+
   return (
     <div style={{ textAlign: "left", padding: "20px" }}>
       <h1 style={h1Style}>Design</h1>
@@ -209,48 +248,62 @@ const Design: React.FC<PatternProps> = ({
         value={numberOfRows}
         valueSetter={setNumberOfRows}
       />
-      <h2 style={h2Style}>Orient Your Earth</h2>
-      <h3 style={h3Style}>Choose a Location</h3>
-      <div style={{ marginBottom: "10px" }}>
-        <select value={locationType} onChange={handleLocationChange}>
-          <option value="North Pole">North Pole</option>
-          <option value="South Pole">South Pole</option>
-          <option value="Current Location">Current Location</option>
-          <option value="Custom Location">Custom Location</option>
-        </select>
-      </div>
-      <CoordinatesInput
-        orientationParameters={orientationParameters}
-        setOrientationParameters={setOrientationParameters}
-        disabled={locationType !== "Custom Location"}
-      />
-      <h3 style={h3Style}>Where Should This Point End Up?</h3>
-      <div style={{ marginBottom: "10px" }}>
-        <select
-          value={orientationParameters.targetDestination}
-          onChange={handleDestinationChange}
-        >
-          <option value="crown">The crown (top) of your hat</option>
-          <option value="front">The front of your hat</option>
-          <option value="rim">The rim (bottom) of your hat</option>
-        </select>
-      </div>
-      <h2 style={h2Style}>Final Touches</h2>
-      <h3 style={h3Style}>Display New Zealand?</h3>
-      <label>
-        <input
-          type="checkbox"
-          checked={orientationParameters.displayNewZealand}
-          onChange={(e) =>
-            setOrientationParameters({
-              ...orientationParameters,
-              displayNewZealand: e.target.checked,
-            })
-          }
-          style={{ marginRight: "5px" }}
+
+      <div
+        style={{
+          overflow: "hidden",
+          maxHeight: showAdvancedOptions ? "1000px" : "0",
+          opacity: showAdvancedOptions ? 1 : 0,
+          transition: "max-height 0.5s ease-in-out, opacity 0.5s ease-in-out",
+        }}
+      >
+        <h2 style={h2Style}>Orient Your Earth</h2>
+        <h3 style={h3Style}>Choose a Location</h3>
+        <div style={{ marginBottom: "10px" }}>
+          <select value={locationType} onChange={handleLocationChange}>
+            <option value="North Pole">North Pole</option>
+            <option value="South Pole">South Pole</option>
+            <option value="Current Location">Current Location</option>
+            <option value="Custom Location">Custom Location</option>
+          </select>
+        </div>
+        <CoordinatesInput
+          orientationParameters={orientationParameters}
+          setOrientationParameters={setOrientationParameters}
+          disabled={locationType !== "Custom Location"}
         />
-        Yes, display New Zealand
-      </label>
+        <h3 style={h3Style}>Where Should This Point End Up?</h3>
+        <div style={{ marginBottom: "10px" }}>
+          <select
+            value={orientationParameters.targetDestination}
+            onChange={handleDestinationChange}
+          >
+            <option value="crown">The crown (top) of your hat</option>
+            <option value="front">The front of your hat</option>
+            <option value="rim">The rim (bottom) of your hat</option>
+          </select>
+        </div>
+        <h2 style={h2Style}>Final Touches</h2>
+        <h3 style={h3Style}>Display New Zealand?</h3>
+        <label>
+          <input
+            type="checkbox"
+            checked={orientationParameters.displayNewZealand}
+            onChange={(e) =>
+              setOrientationParameters({
+                ...orientationParameters,
+                displayNewZealand: e.target.checked,
+              })
+            }
+            style={{ marginRight: "5px" }}
+          />
+          Yes, display New Zealand
+        </label>
+      </div>
+      <ToggleAdvancedOptions
+        showAdvancedOptions={showAdvancedOptions}
+        setShowAdvancedOptions={setShowAdvancedOptions}
+      />
       <br />
       <button
         style={{
@@ -260,7 +313,6 @@ const Design: React.FC<PatternProps> = ({
           border: "none",
           borderRadius: "4px",
           cursor: "pointer",
-          marginTop: "20px",
         }}
         onClick={handleViewAndColour}
       >
