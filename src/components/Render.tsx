@@ -2,13 +2,15 @@ import React, { useEffect } from "react";
 import ChainModel from "../ChainModel/ChainModel";
 import { Stitch } from "../types/Stitch";
 import { useNavigate } from "react-router-dom";
+import { OrientationParameters } from "../types/OrientationParameters";
 
 interface RenderProps {
   stitches: Stitch[];
   setStitches: React.Dispatch<React.SetStateAction<Stitch[]>>;
+  orientationParameters: OrientationParameters;
 }
 
-const Render: React.FC<RenderProps> = ({ stitches, setStitches }) => {
+const Render: React.FC<RenderProps> = ({ stitches, setStitches, orientationParameters }) => {
   const [anyStichRendered, setAnyStitchRendered] = React.useState(false);
   const [simulationActive, setSimulationActive] = React.useState(false);
   const [simulationCompleted, setSimulationCompleted] = React.useState(false);
@@ -57,6 +59,7 @@ const Render: React.FC<RenderProps> = ({ stitches, setStitches }) => {
         <ChainModel
           stitches={stitches}
           setStitches={setStitches}
+          orientationParameters={orientationParameters}
           simulationActive={simulationActive}
           setSimulationActive={setSimulationActive}
           onAnyStitchRendered={() => {

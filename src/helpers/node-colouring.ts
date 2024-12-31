@@ -2,6 +2,7 @@ import { Point } from "../types/Point";
 import { GlobalCoordinates } from "../types/GlobalCoordinates";
 import { getClosestColor, Palette } from "./raster-colouring";
 import { type RGB } from "../types/RGB";
+import { OrientationParameters } from "../types/OrientationParameters";
 
 const colourPalette: RGB[] = Object.values(Palette).map(
   (color) => color.split(",").map(Number) as RGB
@@ -69,15 +70,18 @@ function rotateVertically(
  */
 function rotateToDestination(
   coord: GlobalCoordinates,
-  targetPoint: GlobalCoordinates,
-  destination: "centre" | "pole" = "centre"
+  orientationParameters: OrientationParameters
 ): GlobalCoordinates {
-  const { latitude: targetLatitude, longitude: targetLongitude } = targetPoint;
+  const { latitude: targetLatitude, longitude: targetLongitude } = orientationParameters.coordinates;
   let rotatedCoord;
-  if (destination === "centre") {
+  if (orientationParameters.targetDestination === "front") {
     rotatedCoord = rotateVertically(coord, targetLatitude);
-  } else {
+  } else if (orientationParameters.targetDestination === "crown") {
     rotatedCoord = rotateVertically(coord, targetLatitude - 90);
+  } else if (orientationParameters.targetDestination === "rim") {
+    rotatedCoord = rotateVertically(coord, targetLatitude + 90);
+  } else {
+    throw new Error(`Invalid target destination: ${orientationParameters.targetDestination}`);
   }
   const result = rotateAboutAxis(rotatedCoord, targetLongitude);
   return result;
@@ -86,14 +90,12 @@ function rotateToDestination(
 const colourNode = async (
   position: Point,
   maxY: number,
+  orientationParameters: OrientationParameters,
   palette: RGB[] = colourPalette
 ): Promise<RGB> => {
   const coordinates = getGlobalCoordinates(position, maxY);
-  const rotatedCoordinates = rotateToDestination(coordinates, {
-    latitude: 90,
-    longitude: 0,
-  }, "pole");
-  const colour = await getClosestColor(rotatedCoordinates, palette);
+  const rotatedCoordinates = rotateToDestination(coordinates, orientationParameters);
+  const colour = await getClosestColor(rotatedCoordinates, palette, orientationParameters.displayNewZealand);
 
   if (!colour) {
     console.error("Failed to get colour for node");
@@ -117,7 +119,7 @@ const getGlobalCoordinates = (
   const zNorm = z / radius;
 
   // Compute longitude and latitude
-  const longitude = Math.atan2(xNorm, zNorm); // Radians
+  const longitude = Math.atan2(zNorm, -xNorm); // Radians
   const latitude = Math.asin(yNorm); // Radians
 
   // Convert to degrees

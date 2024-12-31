@@ -5,9 +5,9 @@ import { RapierRigidBody } from "@react-three/rapier";
 import { Stitch } from "../types/Stitch";
 import { colourNode } from "../helpers/node-colouring";
 import * as THREE from "three";
-import { RGB } from "../types/RGB";
 import { adjacentStitchDistance, verticalStitchDistance } from "../constants";
 import { useFrame } from "@react-three/fiber";
+import { OrientationParameters } from "../types/OrientationParameters";
 
 function createChevronTexture() {
   const size = 256; // Texture resolution
@@ -44,6 +44,7 @@ const chevronTexture = createChevronTexture();
 interface StitchPhysicsProps {
   stitchesRef: React.MutableRefObject<Stitch[]>;
   setStitches?: React.Dispatch<React.SetStateAction<Stitch[]>>;
+  orientationParameters: OrientationParameters;
   simulationActive: boolean;
   setSimulationActive?: React.Dispatch<React.SetStateAction<boolean>>;
   onAnyStitchRendered?: () => void;
@@ -52,6 +53,7 @@ interface StitchPhysicsProps {
 const StitchPhysics: React.FC<StitchPhysicsProps> = ({
   stitchesRef,
   setStitches,
+  orientationParameters,
   simulationActive,
   setSimulationActive,
   onAnyStitchRendered,
@@ -119,7 +121,7 @@ const StitchPhysics: React.FC<StitchPhysicsProps> = ({
         if (!colourRef.current) continue;
 
         const position = stitchRef.current.translation();
-        const colour = await colourNode(position, maxY);
+        const colour = await colourNode(position, maxY, orientationParameters);
         setStitches((stitches) =>
           stitches.map((stitch) =>
             stitch.id === i ? { ...stitch, colour, position } : stitch

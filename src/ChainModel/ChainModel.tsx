@@ -6,10 +6,12 @@ import { OrbitControls } from "@react-three/drei";
 import StitchPhysics from "./StitchPhysics";
 import * as THREE from "three";
 import { verticalStitchDistance } from "../constants";
+import { defaultOrientationParameters, OrientationParameters } from "../types/OrientationParameters";
 
 interface ChainModelProps {
   stitches: Stitch[];
   setStitches?: React.Dispatch<React.SetStateAction<Stitch[]>>;
+  orientationParameters?: OrientationParameters;
   simulationActive: boolean;
   setSimulationActive?: React.Dispatch<React.SetStateAction<boolean>>;
   onAnyStitchRendered?: () => void;
@@ -18,6 +20,7 @@ interface ChainModelProps {
 const ChainModel: React.FC<ChainModelProps> = ({
   stitches,
   setStitches,
+  orientationParameters = defaultOrientationParameters,
   simulationActive,
   setSimulationActive,
   onAnyStitchRendered,
@@ -34,7 +37,7 @@ const ChainModel: React.FC<ChainModelProps> = ({
 
   return (
     <Canvas
-      camera={{ position: [0, roughHeight / 2, 4 * stitchesPerRow / 5] }}
+      camera={{ position: [-4 * stitchesPerRow / 5, roughHeight / 2, 0] }}
       style={{ backgroundColor: "rgb(20, 20, 20)" }}
       shadows={"basic"}
     >
@@ -48,6 +51,7 @@ const ChainModel: React.FC<ChainModelProps> = ({
         <StitchPhysics
           stitchesRef={stitchesRef}
           setStitches={setStitches}
+          orientationParameters={orientationParameters}
           simulationActive={simulationActive}
           setSimulationActive={setSimulationActive}
           onAnyStitchRendered={onAnyStitchRendered}
