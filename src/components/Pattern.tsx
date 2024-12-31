@@ -10,15 +10,16 @@ interface PatternProps {
 const Pattern: React.FC<PatternProps> = ({ stitches }) => {
   const [patternSaved, setPatternSaved] = React.useState(false);
   const saveToLocalStorage = () => {
-    const newId = `pattern-${Date.now().toString()}`;
+    const patternId = Date.now().toString();
+    const storageKey = `pattern-${patternId}`;
     const savedPattern: SavedPattern = {
-      id: newId,
+      id: storageKey,
       savedAt: new Date(),
       stitches,
       progress: 0,
     };
-    localStorage.setItem(newId, JSON.stringify(savedPattern));
-    window.location.hash = `#/pattern/${newId}`;
+    localStorage.setItem(storageKey, JSON.stringify(savedPattern));
+    window.location.hash = `#/pattern/${patternId}`;
     setPatternSaved(true);
     alert(
       "Stitches saved to local storage! This pattern may be accessed at any time from the homepage."

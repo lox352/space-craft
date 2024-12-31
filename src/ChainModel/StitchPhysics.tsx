@@ -41,15 +41,6 @@ function createChevronTexture() {
 const geometry = new THREE.PlaneGeometry(1, 1);
 const chevronTexture = createChevronTexture();
 
-const getStitchColour =
-  (maxY: number) =>
-  async (stitchRef: React.RefObject<RapierRigidBody>): Promise<RGB> => {
-    if (!stitchRef.current) return [0, 0, 0]; // Black
-
-    const colour = await colourNode(stitchRef.current.translation(), maxY);
-    return colour;
-  };
-
 interface StitchPhysicsProps {
   stitchesRef: React.MutableRefObject<Stitch[]>;
   setStitches?: React.Dispatch<React.SetStateAction<Stitch[]>>;
@@ -88,11 +79,16 @@ const StitchPhysics: React.FC<StitchPhysicsProps> = ({
   );
 
   useFrame(() => {
-    if (onAnyStitchRendered && frameNumber.current === 0) { onAnyStitchRendered(); }
+    if (onAnyStitchRendered && frameNumber.current === 0) {
+      onAnyStitchRendered();
+    }
     if (!setSimulationActive || !setStitches) return;
-    if (frameNumber.current === 0) { setSimulationActive(true); }
+    if (frameNumber.current === 0) {
+      setSimulationActive(true);
+    }
     if (!simulationActive) return;
     frameNumber.current++;
+
     // Check velocities of all rigid bodies
     let totalMotion = 0;
     stitchRefs.current.forEach((stitchRef) => {
@@ -106,13 +102,8 @@ const StitchPhysics: React.FC<StitchPhysicsProps> = ({
     // Stop simulation if total motion is below a threshold
     const threshold = 0.8 * stitchRefs.current.length;
     if (totalMotion > threshold || frameNumber.current < 10) {
-      console.log(
-        `Total motion: ${totalMotion} and frame number: ${frameNumber.current}. Threshold: ${threshold}`
-      );
       return;
     }
-
-    console.log("Simulation stopped");
 
     setSimulationActive(false);
     (async () => {
@@ -127,8 +118,8 @@ const StitchPhysics: React.FC<StitchPhysicsProps> = ({
         const colourRef = colourRefs.current[i];
         if (!colourRef.current) continue;
 
-        const colour = await getStitchColour(maxY)(stitchRef);
         const position = stitchRef.current.translation();
+        const colour = await colourNode(position, maxY);
         setStitches((stitches) =>
           stitches.map((stitch) =>
             stitch.id === i ? { ...stitch, colour, position } : stitch
@@ -172,7 +163,6 @@ const StitchPhysics: React.FC<StitchPhysicsProps> = ({
     return () => {
       chevronTexture.dispose();
       geometry.dispose();
-      console.log("StitchPhysics has unmounted");
     };
   }, []);
 

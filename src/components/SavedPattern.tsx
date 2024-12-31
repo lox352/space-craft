@@ -9,7 +9,7 @@ const SavedPattern: React.FC = () => {
     return "Could not find pattern";
   }
 
-  const savedPattern = localStorage.getItem(patternId);
+  const savedPattern = localStorage.getItem(`pattern-${patternId}`);
   if (!savedPattern) {
     return "Could not find pattern";
   }

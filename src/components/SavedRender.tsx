@@ -13,7 +13,7 @@ const SavedRender: React.FC = () => {
   if (!patternId) {
     return "Could not find pattern";
   }
-  const patternJson = localStorage.getItem(patternId);
+  const patternJson = localStorage.getItem(`pattern-${patternId}`);
   if (!patternJson) {
     return "Could not find pattern";
   }
