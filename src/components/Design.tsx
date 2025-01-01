@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getStitches } from "../helpers/stitches";
 import { Stitch } from "../types/Stitch";
-import { defaultNumberOfRows, defaultStitchesPerRow } from "../constants";
+import { defaultNumberOfRows, defaultStitchesPerRow, northPole, southPole } from "../constants";
 import DestinationType from "../types/DestinationType";
 import { OrientationParameters } from "../types/OrientationParameters";
 
@@ -193,13 +193,13 @@ const Design: React.FC<PatternProps> = ({
       case "North Pole":
         setOrientationParameters({
           ...orientationParameters,
-          coordinates: { latitude: 90, longitude: 0 },
+          coordinates: northPole,
         });
         break;
       case "South Pole":
         setOrientationParameters({
           ...orientationParameters,
-          coordinates: { latitude: -90, longitude: 0 },
+          coordinates: southPole,
         });
         break;
       case "Current Location":

@@ -3,9 +3,11 @@ import { useParams } from "react-router-dom";
 import { SavedPattern as Pattern } from "../types/SavedPattern";
 import KnittingPattern from "../KnittingPattern";
 
-const getPattern = (patternId: string) => {
-  const savedPattern = localStorage.getItem(`pattern-${patternId}`);
-  return savedPattern ? (JSON.parse(savedPattern) as Pattern) : null;
+const getPattern = (patternId: string | undefined) => {
+  const savedPattern = patternId
+    ? localStorage.getItem(`pattern-${patternId}`)
+    : undefined;
+  return savedPattern ? (JSON.parse(savedPattern) as Pattern) : undefined;
 };
 
 const saveProgress = (patternId: string, progress: number) => {
@@ -93,20 +95,33 @@ const RecordingProgress: React.FC<RecordingProgressProps> = ({
 };
 
 const SavedPattern: React.FC = () => {
-  const [recordingProgress, setRecordingProgress] = React.useState(false);
-
   const { patternId } = useParams();
-  const savedPattern = patternId ? getPattern(patternId) : null;
 
-  const [progress, setProgress] = useState(() =>
-    Math.max(savedPattern?.progress || 0, 0)
+  const [recordingProgress, setRecordingProgress] = React.useState(false);
+  const [savedPattern, setSavedPattern] = useState<Pattern | undefined>(
+    getPattern(patternId)
   );
+
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const newSavedPattern = getPattern(patternId);
+      setSavedPattern(newSavedPattern);
+    };
+
+    window.addEventListener("storageUpdated", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storageUpdated", handleStorageChange);
+    };
+  }, [patternId]);
 
   const recordStitches = (delta: number | "addRow" | "takeRow") => {
     if (!savedPattern?.stitches) {
       alert("Pattern not found");
       return;
     }
+    const progress = savedPattern.progress;
     let newProgress = progress;
     if (delta === "addRow") {
       const nextRowStitch = savedPattern.stitches
@@ -124,14 +139,10 @@ const SavedPattern: React.FC = () => {
       newProgress += delta;
     }
 
-    setProgress(Math.max(newProgress ?? 0, 0));
+    newProgress = Math.max(newProgress ?? 0, 0);
+    localStorage.setItem(savedPattern.id, JSON.stringify({ ...savedPattern, progress: newProgress }));
+    window.dispatchEvent(new CustomEvent("storageUpdated"));
   };
-
-  useEffect(() => {
-    if (patternId && recordingProgress) {
-      saveProgress(patternId, progress);
-    }
-  }, [recordingProgress, progress, patternId]);
 
   if (!savedPattern) {
     return <h1>Pattern not found</h1>;
@@ -140,9 +151,9 @@ const SavedPattern: React.FC = () => {
   return (
     <div style={{ textAlign: "left", padding: "20px" }}>
       <h1 style={{ fontSize: "2.5rem", marginBottom: "20px" }}>
-        Saved Pattern
+        {savedPattern.name ?? "Saved Pattern"}
       </h1>
-      <KnittingPattern stitches={savedPattern.stitches} progress={progress} />
+      <KnittingPattern stitches={savedPattern.stitches} progress={savedPattern.progress} />
       {!recordingProgress && (
         <button
           style={{
@@ -164,7 +175,7 @@ const SavedPattern: React.FC = () => {
       {recordingProgress && (
         <RecordingProgress
           recordStitches={recordStitches}
-          progress={progress}
+          progress={savedPattern.progress}
           stitchesLength={savedPattern.stitches.length}
         />
       )}

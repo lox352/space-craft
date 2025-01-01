@@ -10,10 +10,13 @@ interface PatternProps {
 const Pattern: React.FC<PatternProps> = ({ stitches }) => {
   const [patternSaved, setPatternSaved] = React.useState(false);
   const saveToLocalStorage = () => {
+    const patternName = prompt("Please enter a name for your pattern:");
+
     const patternId = Date.now().toString();
     const storageKey = `pattern-${patternId}`;
     const savedPattern: SavedPattern = {
       id: storageKey,
+      name: patternName ?? undefined,
       savedAt: new Date(),
       stitches,
       progress: 0,
