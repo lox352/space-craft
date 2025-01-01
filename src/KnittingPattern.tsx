@@ -3,6 +3,7 @@ import { Stitch } from "./types/Stitch";
 
 interface KnittingPatternProps {
   stitches: Stitch[];
+  progress: number;
 }
 
 interface StitchPosition {
@@ -62,7 +63,8 @@ const StitchBox: React.FC<{
   position: StitchPosition;
   numRows: number;
   numCols: number;
-}> = ({ stitch, position, numRows, numCols }) => (
+  completed: boolean;
+}> = ({ stitch, position, numRows, numCols, completed }) => (
   <div
     key={`stitch-${stitch.id}-row-${position.row}-col-${position.col}`}
     id={`stitch-${stitch.id}-row-${position.row}-col-${position.col}`}
@@ -75,6 +77,7 @@ const StitchBox: React.FC<{
       borderTopWidth: (position.row - 1) % 5 === 0 ? "2px" : "1px",
       textAlign: "center",
       position: "relative",
+      opacity: completed ? 0.4 : 1,
     }}
   >
     {stitch.type === "k2tog" && (
@@ -132,7 +135,10 @@ const StitchBox: React.FC<{
   </div>
 );
 
-const KnittingPattern: React.FC<KnittingPatternProps> = ({ stitches }) => {
+const KnittingPattern: React.FC<KnittingPatternProps> = ({
+  stitches,
+  progress,
+}) => {
   const stitchPositions: { [id: number]: StitchPosition } = {};
   const filteredStitches = stitches.filter((stitch) => stitch.id !== 0);
   filteredStitches.forEach((stitch, index) => {
@@ -196,6 +202,7 @@ const KnittingPattern: React.FC<KnittingPatternProps> = ({ stitches }) => {
               position={position}
               numRows={numRows}
               numCols={numCols}
+              completed={stitch.id <= progress}
             />
           );
         })}

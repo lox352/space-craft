@@ -71,7 +71,7 @@ const PreviousPatterns: React.FC<{ patterns: string[] }> = ({ patterns }) => {
                       "Are you sure you want to delete this pattern?"
                     )
                   ) {
-                    localStorage.removeItem(key);
+                    localStorage.removeItem(`pattern-${key}`);
                     window.location.reload();
                   }
                 }}
