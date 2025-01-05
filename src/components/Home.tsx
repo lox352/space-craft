@@ -23,6 +23,10 @@ const PreviousPatterns: React.FC<{ patterns: SavedPattern[] }> = ({
 }) => {
   const navigate = useNavigate();
 
+  if (patterns.length === 0) {
+    return null;
+  }
+  
   return (
     <div style={{ marginTop: "40px" }}>
       <h2 style={{ fontSize: "2rem", marginBottom: "20px" }}>

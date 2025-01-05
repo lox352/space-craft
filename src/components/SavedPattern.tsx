@@ -10,29 +10,19 @@ const getPattern = (patternId: string | undefined) => {
   return savedPattern ? (JSON.parse(savedPattern) as Pattern) : undefined;
 };
 
-const saveProgress = (patternId: string, progress: number) => {
-  const savedPattern = getPattern(patternId);
-  if (savedPattern) {
-    savedPattern.progress = progress;
-    localStorage.setItem(`pattern-${patternId}`, JSON.stringify(savedPattern));
-  } else {
-    alert("Progress hasn't been saved because the pattern does not exist.");
-  }
-};
-
 interface RecordingProgressProps {
   recordStitches: (delta: number | "addRow" | "takeRow") => void;
+  setRecordingProgress: React.Dispatch<React.SetStateAction<boolean>>;
   progress: number;
   stitchesLength: number;
 }
 
 const buttonStyle = {
-  marginRight: "5px",
+  marginLeft: "10px",
   marginBottom: "10px",
-  backgroundColor: "#646cff",
+  backgroundColor: "#4caf50", // green color for add buttons
   color: "white",
   padding: "10px 5px",
-  border: "2px solid black",
   borderRadius: "5px",
   width: "72px",
   cursor: "pointer",
@@ -44,6 +34,7 @@ const minusButtonStyle = {
 };
 const RecordingProgress: React.FC<RecordingProgressProps> = ({
   recordStitches,
+  setRecordingProgress,
   progress,
   stitchesLength,
 }) => {
@@ -87,8 +78,26 @@ const RecordingProgress: React.FC<RecordingProgressProps> = ({
           -Row
         </button>
       </div>
-      <div style={{ textAlign: "right", marginRight: buttonStyle.marginRight }}>
-        {((progress / stitchesLength) * 100).toFixed(2)}% complete
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <div>{((progress / stitchesLength) * 100).toFixed(2)}% complete</div>
+        <button
+          style={{
+            ...buttonStyle,
+            backgroundColor: "#3f51b5",
+            width: "150px",
+            marginLeft: "10px",
+            marginRight: "0px",
+          }}
+          onClick={() => setRecordingProgress(false)}
+        >
+          Stop Knitting
+        </button>
       </div>
     </>
   );
@@ -101,7 +110,6 @@ const SavedPattern: React.FC = () => {
   const [savedPattern, setSavedPattern] = useState<Pattern | undefined>(
     getPattern(patternId)
   );
-
 
   useEffect(() => {
     const handleStorageChange = () => {
@@ -140,7 +148,10 @@ const SavedPattern: React.FC = () => {
     }
 
     newProgress = Math.max(newProgress ?? 0, 0);
-    localStorage.setItem(savedPattern.id, JSON.stringify({ ...savedPattern, progress: newProgress }));
+    localStorage.setItem(
+      savedPattern.id,
+      JSON.stringify({ ...savedPattern, progress: newProgress })
+    );
     window.dispatchEvent(new CustomEvent("storageUpdated"));
   };
 
@@ -153,28 +164,61 @@ const SavedPattern: React.FC = () => {
       <h1 style={{ fontSize: "2.5rem", marginBottom: "20px" }}>
         {savedPattern.name ?? "Saved Pattern"}
       </h1>
-      <KnittingPattern stitches={savedPattern.stitches} progress={savedPattern.progress} />
+
+      <KnittingPattern
+        stitches={savedPattern.stitches}
+        progress={savedPattern.progress}
+      />
       {!recordingProgress && (
-        <button
-          style={{
-            marginTop: "20px",
-            backgroundColor: "#3f51b5",
-            color: "white",
-            padding: "10px 20px",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-          onClick={() => {
-            setRecordingProgress(true);
-          }}
-        >
-          Record Progress
-        </button>
+        <div style={{ textAlign: "right" }}>
+          <button
+            style={{
+              backgroundColor: "#f44336",
+              color: "white",
+              padding: "10px 20px",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+              marginTop: "10px",
+              marginBottom: "10px",
+              marginRight: "10px",
+            }}
+            onClick={() => {
+              window.location.hash = "#/";
+            }}
+          >
+            Return to Homepage
+          </button>
+          <button
+            style={{
+              backgroundColor: "#3f51b5",
+              color: "white",
+              padding: "10px 20px",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+              marginTop: "10px",
+              marginBottom: "10px",
+            }}
+            onClick={() => {
+              setRecordingProgress(true);
+            }}
+          >
+            Start Knitting
+          </button>
+          <div style={{ textAlign: "left"}}>
+            {(
+              (savedPattern.progress / savedPattern.stitches.length) *
+              100
+            ).toFixed(2)}
+            % complete
+          </div>
+        </div>
       )}
       {recordingProgress && (
         <RecordingProgress
           recordStitches={recordStitches}
+          setRecordingProgress={setRecordingProgress}
           progress={savedPattern.progress}
           stitchesLength={savedPattern.stitches.length}
         />

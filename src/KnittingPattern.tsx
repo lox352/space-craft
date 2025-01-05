@@ -191,6 +191,7 @@ const KnittingPattern: React.FC<KnittingPatternProps> = ({
           minHeight: `${(numRows + 2) * 10}px`,
           overflowX: "auto",
           overflowY: "hidden",
+          marginBottom: "10px",
         }}
       >
         {filteredStitches.map((stitch) => {

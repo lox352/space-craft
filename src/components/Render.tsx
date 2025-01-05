@@ -10,11 +10,16 @@ interface RenderProps {
   orientationParameters: OrientationParameters;
 }
 
-const Render: React.FC<RenderProps> = ({ stitches, setStitches, orientationParameters }) => {
+const Render: React.FC<RenderProps> = ({
+  stitches,
+  setStitches,
+  orientationParameters,
+}) => {
   const [anyStichRendered, setAnyStitchRendered] = React.useState(false);
   const [simulationActive, setSimulationActive] = React.useState(false);
   const [simulationCompleted, setSimulationCompleted] = React.useState(false);
   const [patternGenerating, setPatternGenerating] = React.useState(false);
+  const [dyingCompleted, setDyingCompleted] = React.useState(false);
   const simulationRunCount = React.useRef(0);
 
   React.useEffect(() => {
@@ -24,6 +29,9 @@ const Render: React.FC<RenderProps> = ({ stitches, setStitches, orientationParam
 
     if (simulationRunCount.current === 1 && !simulationActive) {
       setSimulationCompleted(true);
+      setTimeout(() => {
+        setDyingCompleted(true);
+      }, 0);
     }
   }, [simulationActive]);
 
@@ -49,7 +57,7 @@ const Render: React.FC<RenderProps> = ({ stitches, setStitches, orientationParam
   if (!thereAreStitches) {
     return null;
   }
-  
+
   return (
     <div style={{ textAlign: "left", padding: "20px" }}>
       <h1 style={{ fontSize: "2.5rem", marginBottom: "20px" }}>
@@ -71,11 +79,12 @@ const Render: React.FC<RenderProps> = ({ stitches, setStitches, orientationParam
         {!anyStichRendered
           ? "Summoning stitches..."
           : !simulationCompleted
-          ? "Dying in progress..."
-          : simulationCompleted &&
-            "Pinch and zoom to see the pattern in more detail"}
+          ? "Letting stitches settle..."
+          : !dyingCompleted
+          ? "We're almost there..."
+          : "Pinch and zoom to see the pattern in more detail"}
       </i>
-      {simulationCompleted && (
+      {dyingCompleted && (
         <div style={{ marginTop: "10px" }}>
           <button
             style={{
