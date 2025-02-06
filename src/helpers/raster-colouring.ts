@@ -1,22 +1,31 @@
 import rasterGlobe from "../assets/raster_globe.tif";
-import rasterGlobeWithoutNewZealand from "../assets/raster_globe_without_nz.tif";
 import * as geotiff from "geotiff";
 import { GlobalCoordinates } from "../types/GlobalCoordinates";
 import { RGB } from "../types/RGB";
 
-enum Palette {
-  Blue = "119,159,196",
-  Green = "178,200,169",
-  White = "233,240,248",
-  Beige = "241,231,212",
-  Black = "0,0,0",
-}
+const Palette: { [key: string]: RGB } = {
+  Blue: [119, 159, 196],
+  Green: [178, 200, 169],
+  White: [233, 240, 248],
+  Beige: [241, 231, 212],
+  Black: [0, 0, 0],
+};
 
 class TiffLoader {
-  private static instance: { [key: string]: { width: number, height: number, rasterData: Uint8Array } } = {};
-  private static loadingPromise: { [key: string]: Promise<{width: number, height: number, rasterData: Uint8Array}> | null } = {};
+  private static instance: {
+    [key: string]: { width: number; height: number; rasterData: Uint8Array };
+  } = {};
+  private static loadingPromise: {
+    [key: string]: Promise<{
+      width: number;
+      height: number;
+      rasterData: Uint8Array;
+    }> | null;
+  } = {};
 
-  static async getInstance(fileName: string): Promise<{width: number, height: number, rasterData: Uint8Array}> {
+  static async getInstance(
+    fileName: string
+  ): Promise<{ width: number; height: number; rasterData: Uint8Array }> {
     if (TiffLoader.instance[fileName]) {
       return TiffLoader.instance[fileName];
     }
@@ -48,7 +57,6 @@ class TiffLoader {
 async function getClosestColor(
   globalCoordinates: GlobalCoordinates,
   palette: RGB[],
-  showNewZealand: boolean,
   sampleRadius: number = 1
 ): Promise<RGB | null> {
   const latitude = globalCoordinates.latitude;
@@ -61,9 +69,8 @@ async function getClosestColor(
   }
 
   // Load the TIFF file
-  const fileName = showNewZealand ? rasterGlobe : rasterGlobeWithoutNewZealand;
-  const tiffLoader = TiffLoader.getInstance(fileName); 
-  const {width, height, rasterData} = await tiffLoader;
+  const tiffLoader = TiffLoader.getInstance(rasterGlobe);
+  const { width, height, rasterData } = await tiffLoader;
 
   // Convert latitude and longitude to pixel coordinates
   const x = Math.round(((longitude + 180) / 360) * width);

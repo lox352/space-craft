@@ -2,7 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getStitches } from "../helpers/stitches";
 import { Stitch } from "../types/Stitch";
-import { defaultNumberOfRows, defaultStitchesPerRow, northPole, southPole } from "../constants";
+import {
+  defaultNumberOfRows,
+  defaultStitchesPerRow,
+  northPole,
+  southPole,
+} from "../constants";
 import DestinationType from "../types/DestinationType";
 import { OrientationParameters } from "../types/OrientationParameters";
 
@@ -184,6 +189,18 @@ const Design: React.FC<PatternProps> = ({
   const [stitchesPerRow, setStitchesPerRow] = useState(defaultStitchesPerRow);
   const [numberOfRows, setNumberOfRows] = useState(defaultNumberOfRows);
   const [locationType, setLocationType] = useState<LocationType>("North Pole");
+  const [decreaseMethod, setDecreaseMethod] = useState<
+    "Hemispherical" | "Pyramidal"
+  >("Pyramidal");
+
+  const handleDecreaseMethodChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const selectedDecreaseMethod = e.target.value as
+      | "Hemispherical"
+      | "Pyramidal";
+    setDecreaseMethod(selectedDecreaseMethod);
+  };
 
   const handleLocationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedLocation = e.target.value;
@@ -228,7 +245,13 @@ const Design: React.FC<PatternProps> = ({
   };
 
   const handleViewAndColour = () => {
-    setStitches(getStitches(stitchesPerRow, numberOfRows));
+    if (decreaseMethod === "Pyramidal" && stitchesPerRow % 10 !== 0) {
+      alert(
+        "The number of stitches per row to be divisible by 10. Change the decrease method to 'Hemispherial' under 'Advanced Options' or choose a different number of stitches per row."
+      );
+      return;
+    }
+    setStitches(getStitches(stitchesPerRow, numberOfRows, decreaseMethod));
     navigate("/render");
   };
 
@@ -257,6 +280,14 @@ const Design: React.FC<PatternProps> = ({
           transition: "max-height 0.5s ease-in-out, opacity 0.5s ease-in-out",
         }}
       >
+        <h2 style={h2Style}>Decrease Method</h2>
+        <h3 style={h3Style}>Choose a Decrease Method</h3>
+        <div style={{ marginBottom: "10px" }}>
+          <select value={decreaseMethod} onChange={handleDecreaseMethodChange}>
+            <option value="Hemispherical">Hemispherical</option>
+            <option value="Pyramidal">Pyramidal</option>
+          </select>
+        </div>
         <h2 style={h2Style}>Orient Your Earth</h2>
         <h3 style={h3Style}>Choose a Location</h3>
         <div style={{ marginBottom: "10px" }}>

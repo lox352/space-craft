@@ -102,7 +102,7 @@ const StitchPhysics: React.FC<StitchPhysicsProps> = ({
     });
 
     // Stop simulation if total motion is below a threshold
-    const threshold = 0.8 * stitchRefs.current.length;
+    const threshold = 0.6 * stitchRefs.current.length;
     if (totalMotion > threshold || frameNumber.current < 10) {
       return;
     }

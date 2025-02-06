@@ -11,6 +11,9 @@ const Pattern: React.FC<PatternProps> = ({ stitches }) => {
   const [patternSaved, setPatternSaved] = React.useState(false);
   const saveToLocalStorage = () => {
     const patternName = prompt("Please enter a name for your pattern:");
+    if (patternName === null) {
+      return;
+    }
 
     const patternId = Date.now().toString();
     const storageKey = `pattern-${patternId}`;

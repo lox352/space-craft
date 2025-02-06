@@ -4,10 +4,6 @@ import { getClosestColor, Palette } from "./raster-colouring";
 import { type RGB } from "../types/RGB";
 import { OrientationParameters } from "../types/OrientationParameters";
 
-const colourPalette: RGB[] = Object.values(Palette).map(
-  (color) => color.split(",").map(Number) as RGB
-);
-
 function rotateAboutAxis(
   coord: GlobalCoordinates,
   angle: number
@@ -30,9 +26,9 @@ function rotateAboutAxis(
  * @returns The rotated coordinate { latitude, longitude }.
  */
 function rotateVertically(
-  coord: {latitude: number, longitude: number},
+  coord: { latitude: number; longitude: number },
   angleInDegrees: number
-): {latitude: number, longitude: number} {
+): { latitude: number; longitude: number } {
   const toRadians = (degrees: number) => (degrees * Math.PI) / 180;
   const toDegrees = (radians: number) => (radians * 180) / Math.PI;
 
@@ -72,7 +68,8 @@ function rotateToDestination(
   coord: GlobalCoordinates,
   orientationParameters: OrientationParameters
 ): GlobalCoordinates {
-  const { latitude: targetLatitude, longitude: targetLongitude } = orientationParameters.coordinates;
+  const { latitude: targetLatitude, longitude: targetLongitude } =
+    orientationParameters.coordinates;
   let rotatedCoord;
   if (orientationParameters.targetDestination === "front") {
     rotatedCoord = rotateVertically(coord, targetLatitude);
@@ -81,7 +78,9 @@ function rotateToDestination(
   } else if (orientationParameters.targetDestination === "rim") {
     rotatedCoord = rotateVertically(coord, targetLatitude + 90);
   } else {
-    throw new Error(`Invalid target destination: ${orientationParameters.targetDestination}`);
+    throw new Error(
+      `Invalid target destination: ${orientationParameters.targetDestination}`
+    );
   }
   const result = rotateAboutAxis(rotatedCoord, targetLongitude);
   return result;
@@ -91,11 +90,20 @@ const colourNode = async (
   position: Point,
   maxY: number,
   orientationParameters: OrientationParameters,
-  palette: RGB[] = colourPalette
+  palette: RGB[] = Object.values(Palette)
 ): Promise<RGB> => {
   const coordinates = getGlobalCoordinates(position, maxY);
-  const rotatedCoordinates = rotateToDestination(coordinates, orientationParameters);
-  const colour = await getClosestColor(rotatedCoordinates, palette, orientationParameters.displayNewZealand);
+  const rotatedCoordinates = rotateToDestination(
+    coordinates,
+    orientationParameters
+  );
+  if (
+    !orientationParameters.displayNewZealand &&
+    isNewZealand(rotatedCoordinates)
+  ) {
+    return Palette.Blue;
+  }
+  const colour = await getClosestColor(rotatedCoordinates, palette);
 
   if (!colour) {
     console.error("Failed to get colour for node");
@@ -137,3 +145,12 @@ const getGlobalCoordinates = (
 };
 
 export { colourNode };
+
+function isNewZealand(coordinates: GlobalCoordinates) {
+  return (
+    coordinates.latitude > -50 &&
+    coordinates.latitude < -34 &&
+    coordinates.longitude > 165 &&
+    coordinates.longitude < 180
+  );
+}

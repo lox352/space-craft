@@ -175,7 +175,7 @@ const SavedPattern: React.FC = () => {
             style={{
               backgroundColor: "#f44336",
               color: "white",
-              padding: "10px 20px",
+              padding: "10px 15px",
               border: "none",
               borderRadius: "4px",
               cursor: "pointer",
@@ -187,13 +187,13 @@ const SavedPattern: React.FC = () => {
               window.location.hash = "#/";
             }}
           >
-            Return to Homepage
+            Back to Homepage
           </button>
           <button
             style={{
               backgroundColor: "#3f51b5",
               color: "white",
-              padding: "10px 20px",
+              padding: "10px 15px",
               border: "none",
               borderRadius: "4px",
               cursor: "pointer",
